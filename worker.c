@@ -40,7 +40,9 @@ void* worker(void* arg)
 	}
 
 	if (SSH_OK == ssh_handle_key_exchange(session)) {
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
 		ssh_set_auth_methods(session, SSH_AUTH_METHOD_PASSWORD);
+#endif
 
 		do {
 			ssh_message message = ssh_message_get(session);
