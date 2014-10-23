@@ -16,6 +16,7 @@ struct connection_info_t {
 struct globals_t {
 	char* rsa_key;
 	char* dsa_key;
+	char* host_key;
 	char* bind_address;
 	char* bind_port;
 	char* pid_file;

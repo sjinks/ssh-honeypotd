@@ -7,6 +7,7 @@ void init_globals(struct globals_t* g)
 {
 	g->rsa_key      = NULL;
 	g->dsa_key      = NULL;
+	g->host_key     = NULL;
 	g->bind_address = NULL;
 	g->bind_port    = NULL;
 	g->pid_file     = NULL;
@@ -62,6 +63,7 @@ void free_globals(struct globals_t* g)
 
 	if (g->rsa_key)      free(g->rsa_key);
 	if (g->dsa_key)      free(g->dsa_key);
+	if (g->host_key)     free(g->host_key);
 	if (g->bind_address) free(g->bind_address);
 	if (g->bind_port)    free(g->bind_port);
 	if (g->pid_file)     free(g->pid_file);
