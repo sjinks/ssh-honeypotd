@@ -15,11 +15,13 @@ DESC="SSH Honeypot"
 NAME=ssh-honeypotd
 DAEMON=/usr/sbin/$NAME
 PIDFILE=/var/run/$NAME.pid
-DAEMON_ARGS="-P $PIDFILE"
+DAEMON_ARGS=
 SCRIPTNAME=/etc/init.d/$NAME
 
 [ -x "$DAEMON" ] || exit 0
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+DAEMON_ARGS="-P $PIDFILE $DAEMON_ARGS"
 
 if [ "$START" != "yes" ]; then
 	if [ "$1" != "stop" ]; then
@@ -64,16 +66,16 @@ case "$1" in
 		[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
 		do_start
 		case "$?" in
-			0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
-			2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+			0|1) [ "$VERBOSE" != no ] && log_end_msg 0 || exit 0 ;;
+			2) [ "$VERBOSE" != no ] && log_end_msg 1 || exit 1 ;;
 		esac
 		;;
 	stop)
 		[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
 		do_stop
 		case "$?" in
-			0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
-			2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+			0|1) [ "$VERBOSE" != no ] && log_end_msg 0 || exit 0 ;;
+			2) [ "$VERBOSE" != no ] && log_end_msg 1 || exit 1 ;;
 		esac
 		;;
 	status)
