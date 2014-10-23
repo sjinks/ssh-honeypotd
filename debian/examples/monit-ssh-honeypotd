@@ -1,0 +1,16 @@
+check process ssh-honeypotd with pidfile /run/ssh-honeypotd.pid
+	group system
+	group ssh-honeypotd
+	start program = "/etc/init.d/ssh-honeypotd start"
+	stop program  = "/etc/init.d/ssh-honeypotd start"
+	if 5 restarts within 5 cycles then timeout
+	depends on ssh-honeypotd_bin
+	depends on ssh-honeypotd_rc
+
+check file ssh-honeypotd_bin with path /usr/sbin/ssh-honeypotd
+	group ssh-honeypotd
+	include /etc/monit/templates/rootbin
+
+check file ssh-honeypotd_rc with path /etc/init.d/ssh-honeypotd
+	group ssh-honeypotd
+	include /etc/monit/templates/rootbin
