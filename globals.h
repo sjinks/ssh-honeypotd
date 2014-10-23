@@ -33,6 +33,7 @@ struct globals_t {
 	struct connection_info_t* tail;
 
 	int pid_fd;
+	int foreground;
 };
 
 extern struct globals_t globals;

@@ -30,6 +30,7 @@ static void usage(struct globals_t* g)
 		"  -p, --port POR        the port to bind to (default: 22)\n"
 		"  -P, --pid FILE        the PID file (default: /var/run/ssh-honeypotd.pid)\n"
 		"  -n, --name NAME       the name of the daemon for syslog (default: ssh-honeypotd)\n"
+		"  -f, --foreground      do not daemonize\n"
 		"      --help            display this help and exit\n"
 		"  -v, --version         output version information and exit\n\n"
 		"One of -r, -d, or -k must be specified.\n\n"
@@ -56,7 +57,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 {
 	while (1) {
 		int option_index = 0;
-		int c = getopt_long(argc, argv, "r:d:k:b:p:P:n:c:v", long_options, &option_index);
+		int c = getopt_long(argc, argv, "r:d:k:b:p:P:n:c:vf", long_options, &option_index);
 		if (-1 == c) {
 			break;
 		}
@@ -116,6 +117,10 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 				}
 
 				g->daemon_name = strdup(optarg);
+				break;
+
+			case 'f':
+				g->foreground = 1;
 				break;
 
 			case 'h':
