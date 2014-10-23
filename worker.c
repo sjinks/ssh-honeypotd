@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <syslog.h>
@@ -22,16 +23,21 @@ void* worker(void* arg)
 	int version         = ssh_get_version(session);
 	socklen_t len       = sizeof(addr);
 
-	getpeername(sock, (struct sockaddr*)&addr, &len);
-	if (addr.ss_family == AF_INET) {
-		struct sockaddr_in* s = (struct sockaddr_in*)&addr;
-		port = ntohs(s->sin_port);
-		inet_ntop(AF_INET, &s->sin_addr, ipstr, sizeof(ipstr));
-	}
-	else if (addr.ss_family == AF_INET6) { // AF_INET6
-		struct sockaddr_in6* s = (struct sockaddr_in6*)&addr;
-		port = ntohs(s->sin6_port);
-		inet_ntop(AF_INET6, &s->sin6_addr, ipstr, sizeof(ipstr));
+	if (!getpeername(sock, (struct sockaddr*)&addr, &len)) {
+		if (addr.ss_family == AF_INET) {
+			struct sockaddr_in* s = (struct sockaddr_in*)&addr;
+			port = ntohs(s->sin_port);
+			inet_ntop(AF_INET, &s->sin_addr, ipstr, sizeof(ipstr));
+		}
+		else if (addr.ss_family == AF_INET6) { // AF_INET6
+			struct sockaddr_in6* s = (struct sockaddr_in6*)&addr;
+			port = ntohs(s->sin6_port);
+			inet_ntop(AF_INET6, &s->sin6_addr, ipstr, sizeof(ipstr));
+		}
+		else {
+			/* Should not happen */
+			assert(0);
+		}
 	}
 	else {
 		ipstr[0] = '?';
@@ -115,4 +121,3 @@ void finalize_connection(struct connection_info_t* conn)
 	ssh_free(session);
 	free(conn);
 }
-
