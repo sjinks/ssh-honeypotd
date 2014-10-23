@@ -7,8 +7,8 @@ Makefile.in
 /install-sh
 /missing
 /stamp-h1
-*.d
-*.o
+/*.d
+/*.o
 ssh-honeypotd
 /.cproject
 /.project

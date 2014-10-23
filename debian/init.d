@@ -26,8 +26,8 @@ if [ "$START" != "yes" ]; then
 		printf "\tplease configure $NAME and then edit /etc/default/$NAME\n"
 		printf "\tand set the \"START\" variable to \"yes\" in order to allow\n"
 		printf "\t$NAME to start\n"
-		exit 0
 	fi
+	exit 0
 fi
 
 . /lib/init/vars.sh
