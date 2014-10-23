@@ -1,0 +1,15 @@
+Source: ssh-honeypotd
+Section: net
+Priority: optional
+Maintainer: Volodymyr Kolesnykov <volodymyr@wildwolf.name>
+Build-Depends: debhelper (>= 7.0.50~), libssh-dev
+Standards-Version: 3.9.5
+Vcs-Git: https://github.com/sjinks/ssh-honeypotd.git
+
+Package: ssh-honeypotd
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.2-14)
+Suggests: fail2ban
+Description: Low-interaction honeypot for SSH
+ ssh-honeypotd is a daemon that simulates an SSH server
+ and logs every attempt to log in.

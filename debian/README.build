@@ -1,0 +1,1 @@
+git-buildpackage --git-verbose --git-notify=off --git-upstream-branch=master --git-force-create --git-upstream-tag=master -S -sa

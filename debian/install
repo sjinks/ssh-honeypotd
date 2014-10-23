@@ -1,0 +1,2 @@
+ssh-honeypotd usr/sbin
+ssh_host*.dist etc/ssh-honeypotd

@@ -1,0 +1,5 @@
+ssh-honeypotd (0.1) trusty; urgency=low
+
+  * Initial release
+
+ -- Volodymyr Kolesnykov <volodymyr@wildwolf.name>  Thu, 23 Oct 2014 08:07:00 +0300
