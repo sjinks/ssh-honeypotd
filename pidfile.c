@@ -27,16 +27,9 @@ static int lock_file(int fd, int type, short int whence, off_t start, off_t len)
 
 int create_pid_file(const char* path)
 {
-	int flags;
 	int fd = open(path, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (-1 == fd) {
 		return -1;
-	}
-
-	flags = fcntl(fd, F_GETFD);
-	if (flags != -1) {
-		flags |= FD_CLOEXEC;
-		fcntl(fd, F_SETFD, flags);
 	}
 
 	if (lock_file(fd, F_WRLCK, SEEK_SET, 0, 0) == -1) {
