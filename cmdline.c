@@ -16,12 +16,9 @@ static struct option long_options[] = {
 
 void parse_options(int argc, char** argv, struct globals_t* g)
 {
-	int c;
-
 	while (1) {
 		int option_index = 0;
-
-		c = getopt_long(argc, argv, "r:d:b:p:P:n:c:", long_options, &option_index);
+		int c = getopt_long(argc, argv, "r:d:b:p:P:n:c:", long_options, &option_index);
 		if (-1 == c) {
 			break;
 		}
