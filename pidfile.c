@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -55,7 +56,9 @@ int create_pid_file(const char* path)
 	}
 
 #ifndef F_OFD_SETLK
-	lock_file(fd, F_UNLCK, SEEK_SET, 0, 0);
+	if (lock_file(fd, F_UNLCK, SEEK_SET, 0, 0) == -1) {
+		assert(0);
+	}
 #endif
 
 	return fd;
