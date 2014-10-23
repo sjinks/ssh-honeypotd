@@ -32,6 +32,8 @@ static void set_options(struct globals_t* globals)
 	if (globals->host_key) {
 		ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_HOSTKEY, globals->host_key);
 	}
+
+	ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_BANNER, "OpenSSH");
 }
 
 static void daemonize(struct globals_t* globals)
