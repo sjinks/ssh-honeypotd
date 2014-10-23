@@ -1,0 +1,21 @@
+#include <tunables/global>
+
+/usr/sbin/ssh-honeypotd {
+  #include <abstractions/base>
+
+  capability net_bind_service,
+  capability setgid,
+  capability setuid,
+
+  network tcp,
+
+  /etc/nsswitch.conf r,
+  /etc/passwd r,
+  /etc/ssh-honeypotd/* r,
+  /run/ssh-honeypotd.pid rwk,
+  /usr/sbin/ssh-honeypotd mr,
+
+  # Site-specific additions and overrides. See local/README for details.
+  #include <local/usr.sbin.ssh-honeypotd>
+
+}
