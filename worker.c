@@ -11,7 +11,6 @@
 
 void* worker(void* arg)
 {
-	printf("%s\n", __func__);
 	struct sockaddr_storage addr;
 	char ipstr[INET6_ADDRSTRLEN];
 	int port;
