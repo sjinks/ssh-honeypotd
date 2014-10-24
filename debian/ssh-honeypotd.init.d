@@ -37,15 +37,6 @@ mkdir -p $(dirname "$PIDFILE")
 chmod 0770 $(dirname "$PIDFILE")
 chown "root:$DAEMON_GROUP" $(dirname "$PIDFILE")
 
-if [ "$START" != "yes" ]; then
-	if [ "$1" != "stop" ]; then
-		printf "\tplease configure $NAME and then edit /etc/default/$NAME\n"
-		printf "\tand set the \"START\" variable to \"yes\" in order to allow\n"
-		printf "\t$NAME to start\n"
-	fi
-	exit 0
-fi
-
 . /lib/init/vars.sh
 . /lib/lsb/init-functions
 

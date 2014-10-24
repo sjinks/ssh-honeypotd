@@ -1,3 +1,10 @@
+ssh-honeypotd (0.2.2) trusty; urgency=high
+
+  * Revert 'Set RLIMIT_NPROC to 0 after initialization'
+  * Generate server keys automatically if possible or use dist keys
+
+ -- Volodymyr Kolesnykov <volodymyr@wildwolf.name>  Fri, 24 Oct 2014 09:00:00 +0300
+
 ssh-honeypotd (0.2.1) trusty; urgency=low
 
   * Fix memory leak in parse_options()
