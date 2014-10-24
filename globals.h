@@ -2,6 +2,7 @@
 #define GLOBALS_H_
 
 #include <stddef.h>
+#include <sys/types.h>
 #include <signal.h>
 #include <pthread.h>
 #include <libssh/server.h>
@@ -34,6 +35,10 @@ struct globals_t {
 
 	int pid_fd;
 	int foreground;
+	int uid_set;
+	int gid_set;
+	uid_t uid;
+	gid_t gid;
 };
 
 extern struct globals_t globals;

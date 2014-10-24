@@ -25,7 +25,7 @@ void set_signals(void)
 	sigaction(SIGHUP, &sa, NULL);
 }
 
-static struct passwd* find_account(void)
+static int find_account(uid_t* uid, gid_t* gid)
 {
 	struct passwd* pwd;
 
@@ -34,21 +34,41 @@ static struct passwd* find_account(void)
 		pwd = getpwnam("daemon");
 	}
 
-	return pwd;
+	if (pwd) {
+		*uid = pwd->pw_uid;
+		*gid = pwd->pw_gid;
+		return 0;
+	}
+
+	return -1;
 }
 
-int drop_privs(const struct globals_t* globals)
+int drop_privs(struct globals_t* globals)
 {
 	if (0 == geteuid()) {
-		struct passwd* pwd = find_account();
-		if (!pwd) {
-			return DP_NO_UNPRIV_ACCOUNT;
+		if (!globals->uid_set || !globals->gid_set) {
+			uid_t uid;
+			gid_t gid;
+
+			if (-1 == find_account(&uid, &gid)) {
+				return DP_NO_UNPRIV_ACCOUNT;
+			}
+
+			if (!globals->uid_set) {
+				globals->uid_set = 1;
+				globals->uid     = uid;
+			}
+
+			if (!globals->gid_set) {
+				globals->gid_set = 1;
+				globals->gid     = gid;
+			}
 		}
 
 		if (
 			   setgroups(0, NULL)
-			|| setgid(pwd->pw_gid)
-			|| setuid(pwd->pw_uid)
+			|| setgid(globals->gid)
+			|| setuid(globals->uid)
 		) {
 			return DP_GENERAL_FAILURE;
 		}
