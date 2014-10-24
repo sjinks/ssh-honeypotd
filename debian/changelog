@@ -5,7 +5,7 @@ ssh-honeypotd (0.2) trusty; urgency=low
   * Added option to stay in foreground
   * Set RLIMIT_NPROC to 0 after initialization
 
- -- Volodymyr Kolesnykov <volodymyr@wildwolf.name>  Thu, 24 Oct 2014 05:20:00 +0300
+ -- Volodymyr Kolesnykov <volodymyr@wildwolf.name>  Fri, 24 Oct 2014 05:20:00 +0300
 
 ssh-honeypotd (0.1) trusty; urgency=low
 

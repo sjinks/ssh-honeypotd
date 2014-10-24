@@ -16,7 +16,7 @@ set -e
 case "$1" in
 	configure)
 		addgroup sshhoneypotd
-		adduser --system --no-create-home --disabled-password --ingroup sshhoneypotd sshhoneypotd
+		adduser --system --home /nonexistent --no-create-home --disabled-password --ingroup sshhoneypotd sshhoneypotd
 	;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)

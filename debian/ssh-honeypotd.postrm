@@ -14,7 +14,7 @@ set -e
 #          <overwriter-version>
 
 case "$1" in
-	purge:
+	purge)
 		if [ -x "$(command -v deluser)" ]; then
 			deluser --quiet --system sshhoneypotd > /dev/null || true
 		else
