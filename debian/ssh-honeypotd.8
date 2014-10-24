@@ -17,17 +17,27 @@ the file containing the private host DSA key (SSH2)
 .TP
 \fB\-k\fR, \fB\-\-host\-key\fR FILE
 the file containing the private host key (SSH1)
-.HP
-\fB\-b\fR, \fB\-\-address\fR ADDRESS the IP address to bind to (default: 0.0.0.0)
 .TP
-\fB\-p\fR, \fB\-\-port\fR POR
+\fB\-b\fR, \fB\-\-address\fR ADDRESS
+the IP address to bind to (default: 0.0.0.0)
+.TP
+\fB\-p\fR, \fB\-\-port\fR PORT
 the port to bind to (default: 22)
 .TP
 \fB\-P\fR, \fB\-\-pid\fR FILE
-the PID file (default: \fI/var/run/ssh\-honeypotd.pid\fP)
+the PID file (default: \fI/var/run/ssh\-honeypotd/ssh\-honeypotd.pid\fP)
 .TP
 \fB\-n\fR, \fB\-\-name\fR NAME
 the name of the daemon for syslog (default: ssh\-honeypotd)
+.TP
+\fB\-u\fR, \fB\-\-user\fR USER
+drop privileges and switch to this user (default: \fIdaemon\fP or \fInobody\fP)
+.TP
+\fB-g\fR, \fB\-\-group\fR NAME
+drop privileges and switch to this group (default: \fIdaemon\fP or \fInogroup\fP)
+.TP
+\fB-f\fR, \fB\-\-foreground\fR
+do not daemonize
 .TP
 \fB\-\-help\fR
 display this help and exit
