@@ -15,7 +15,7 @@ set -e
 
 case "$1" in
 	configure)
-		addgroup sshhoneypotd || true
+		addgroup --system sshhoneypotd || true
 		adduser --system --home /nonexistent --no-create-home --disabled-password --ingroup sshhoneypotd sshhoneypotd
 		if [ -x "$(command -v ssh-keygen)" ]; then
 			[ -f /etc/ssh-honeypotd/ssh_host_dsa_key ] || ssh-keygen -f /etc/ssh-honeypotd/ssh_host_dsa_key -N '' -t dsa  || true
