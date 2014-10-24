@@ -207,7 +207,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 		if (cwd) {
 			size_t cwd_len = strlen(cwd);
 			size_t pid_len = strlen(g->pid_file);
-			char* newbuf   = calloc(cwd_len + pid_len + 2, 1);
+			newbuf         = calloc(cwd_len + pid_len + 2, 1);
 			if (newbuf) {
 				memcpy(newbuf, cwd, cwd_len);
 				newbuf[cwd_len + 1] = '/';
