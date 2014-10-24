@@ -4,7 +4,6 @@
 #include <pthread.h>
 #include <syslog.h>
 #include <errno.h>
-#include <sys/resource.h>
 #include <libssh/server.h>
 #include "globals.h"
 #include "daemon.h"
@@ -64,15 +63,6 @@ static void daemonize(struct globals_t* globals)
 			perror("daemon");
 			free_globals(globals);
 			exit(EXIT_FAILURE);
-		}
-	}
-
-	{
-		struct rlimit lim;
-		lim.rlim_cur = 0;
-		lim.rlim_max = 0;
-		if (-1 == setrlimit(RLIMIT_NPROC, &lim)) {
-			syslog(LOG_WARNING, "Failed to set RLIMIT_NPROC to 0: %s", strerror(errno));
 		}
 	}
 }
