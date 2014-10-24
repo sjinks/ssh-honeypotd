@@ -34,8 +34,8 @@ fi
 DEAMON_ARGS="$DAEMON_ARGS -u $DAEMON_USER -g $DAEMON_GROUP"
 
 mkdir -p $(dirname "$PIDFILE")
-chmod 0700 $(dirname "$PIDFILE")
-chown "$DAEMON_USER:$DAEMON_GROUP" $(dirname "$PIDFILE")
+chmod 0770 $(dirname "$PIDFILE")
+chown "root:$DAEMON_GROUP" $(dirname "$PIDFILE")
 
 if [ "$START" != "yes" ]; then
 	if [ "$1" != "stop" ]; then
