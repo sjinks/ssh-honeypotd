@@ -12,7 +12,7 @@
   /etc/nsswitch.conf r,
   /etc/passwd r,
   /etc/ssh-honeypotd/* r,
-  /run/ssh-honeypotd.pid rwk,
+  /run/ssh-honeypotd/ssh-honeypotd.pid rwk,
   /usr/sbin/ssh-honeypotd mr,
 
   # Site-specific additions and overrides. See local/README for details.
