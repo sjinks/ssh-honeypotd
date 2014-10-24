@@ -86,8 +86,8 @@ void spawn_thread(struct globals_t* globals, pthread_attr_t* attr, ssh_session s
 		if (!globals->head) globals->head       = conn;
 		if (globals->tail)  globals->tail->next = conn;
 
-		globals->tail = conn;
 		conn->prev    = globals->tail;
+		globals->tail = conn;
 		num_threads   = globals->n_threads;
 		++globals->n_threads;
 	}
