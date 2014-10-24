@@ -14,14 +14,28 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="SSH Honeypot"
 NAME=ssh-honeypotd
 DAEMON=/usr/sbin/$NAME
-PIDFILE=/var/run/$NAME.pid
+PIDFILE=/run/ssh-honeypotd/$NAME.pid
 DAEMON_ARGS=
 SCRIPTNAME=/etc/init.d/$NAME
 
 [ -x "$DAEMON" ] || exit 0
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
-DAEMON_ARGS="-P $PIDFILE $DAEMON_ARGS"
+DAEMON_ARGS="$DAEMON_ARGS -P $PIDFILE"
+
+if [ -z "$DAEMON_USER" ]; then
+	DAEMON_USER=daemon
+fi
+
+if [ -z "$DAEMON_GROUP" ]; then
+	DAEMON_GROUP=daemon
+fi
+
+DEAMON_ARGS="$DAEMON_ARGS -u $DAEMON_USER -g $DAEMON_GROUP"
+
+mkdir -p $(dirname "$PIDFILE")
+chmod 0700 $(dirname "$PIDFILE")
+chown "$DAEMON_USER:$DAEMON_GROUP" $(dirname "$PIDFILE")
 
 if [ "$START" != "yes" ]; then
 	if [ "$1" != "stop" ]; then
