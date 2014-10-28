@@ -3,12 +3,12 @@ Section: net
 Priority: optional
 Maintainer: Volodymyr Kolesnykov <volodymyr@wildwolf.name>
 Build-Depends: debhelper (>= 7.0.50~), libssh-dev, dh-apparmor
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Vcs-Git: https://github.com/sjinks/ssh-honeypotd.git
 
 Package: ssh-honeypotd
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.2-14), adduser
+Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.2-14), adduser, initscripts (>= 2.88dsf-13.3)
 Suggests: fail2ban, apparmor, openssh-client
 Description: Low-interaction honeypot for SSH
  ssh-honeypotd is a daemon that simulates an SSH server
