@@ -19,3 +19,4 @@ ssh-honeypotd
 /debian/*.substvars
 /debian/ssh-honeypotd
 /debian/ssh-honeypotd-dbg
+/distbuild.sh
