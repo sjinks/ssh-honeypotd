@@ -60,7 +60,7 @@ void* worker(void* arg)
 	else {
 		my_ipstr[0] = '?';
 		my_ipstr[1] = 0;
-		port     = -1;
+		my_port     = -1;
 	}
 
 	if (SSH_OK == ssh_handle_key_exchange(session)) {
