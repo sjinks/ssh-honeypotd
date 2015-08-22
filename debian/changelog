@@ -1,3 +1,10 @@
+ssh-honeypotd (0.3.0) trusty; urgency=low
+
+  * Support for ECDSA keys (for recent libssh)
+  * Log destination IP and port
+
+ -- Volodymyr Kolesnykov <volodymyr@wildwolf.name>  Sat, 22 Aug 2015 20:42:00 +0300
+
 ssh-honeypotd (0.2.3) trusty; urgency=high
 
   * Packaging bug fixes
