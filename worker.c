@@ -9,11 +9,34 @@
 #include "worker.h"
 #include "globals.h"
 
+static void get_ip_port(const struct sockaddr_storage* addr, char* ipstr, int* port)
+{
+	assert(addr  != NULL);
+	assert(ipstr != NULL);
+	assert(port  != NULL);
+
+	if (addr->ss_family == AF_INET) {
+		const struct sockaddr_in* s = (const struct sockaddr_in*)addr;
+		*port = ntohs(s->sin_port);
+		inet_ntop(AF_INET, &s->sin_addr, ipstr, INET6_ADDRSTRLEN);
+	}
+	else if (addr->ss_family == AF_INET6) { // AF_INET6
+		const struct sockaddr_in6* s = (const struct sockaddr_in6*)addr;
+		*port = ntohs(s->sin6_port);
+		inet_ntop(AF_INET6, &s->sin6_addr, ipstr, INET6_ADDRSTRLEN);
+	}
+	else {
+		/* Should not happen */
+		assert(0);
+	}
+}
+
 void* worker(void* arg)
 {
 	struct sockaddr_storage addr;
 	char ipstr[INET6_ADDRSTRLEN];
-	int port;
+	char my_ipstr[INET6_ADDRSTRLEN];
+	int port, my_port;
 
 	struct connection_info_t* conn = (struct connection_info_t*)arg;
 
@@ -23,24 +46,20 @@ void* worker(void* arg)
 	socklen_t len       = sizeof(addr);
 
 	if (!getpeername(sock, (struct sockaddr*)&addr, &len)) {
-		if (addr.ss_family == AF_INET) {
-			struct sockaddr_in* s = (struct sockaddr_in*)&addr;
-			port = ntohs(s->sin_port);
-			inet_ntop(AF_INET, &s->sin_addr, ipstr, sizeof(ipstr));
-		}
-		else if (addr.ss_family == AF_INET6) { // AF_INET6
-			struct sockaddr_in6* s = (struct sockaddr_in6*)&addr;
-			port = ntohs(s->sin6_port);
-			inet_ntop(AF_INET6, &s->sin6_addr, ipstr, sizeof(ipstr));
-		}
-		else {
-			/* Should not happen */
-			assert(0);
-		}
+		get_ip_port(&addr, ipstr, &port);
 	}
 	else {
 		ipstr[0] = '?';
 		ipstr[1] = 0;
+		port     = -1;
+	}
+
+	if (!getsockname(sock, (struct sockaddr*)&addr, &len)) {
+		get_ip_port(&addr, my_ipstr, &my_port);
+	}
+	else {
+		my_ipstr[0] = '?';
+		my_ipstr[1] = 0;
 		port     = -1;
 	}
 
@@ -59,7 +78,12 @@ void* worker(void* arg)
 				case SSH_REQUEST_AUTH:
 					switch (ssh_message_subtype(message)) {
 						case SSH_AUTH_METHOD_PASSWORD:
-							syslog(LOG_WARNING, "Failed password for %s from %s port %d ssh%d (%s)", ssh_message_auth_user(message), ipstr, port, version, ssh_message_auth_password(message));
+							syslog(
+								LOG_WARNING,
+								"Failed password for %s from %s port %d ssh%d (target: %s:%d, password: %s)",
+								ssh_message_auth_user(message), ipstr, port, version,
+								my_ipstr, my_port, ssh_message_auth_password(message)
+							);
 							/* no break */
 
 						default:
