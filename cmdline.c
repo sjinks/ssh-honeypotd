@@ -62,7 +62,7 @@ static void usage(struct globals_t* g)
 static void version(struct globals_t* g)
 {
 	printf(
-		"ssh-honeypotd 0.2\n"
+		"ssh-honeypotd 0.3\n"
 		"Copyright (c) 2014, Volodymyr Kolesnykov <volodymyr@wildwolf.name>\n"
 		"License: MIT <http://opensource.org/licenses/MIT>\n"
 	);
