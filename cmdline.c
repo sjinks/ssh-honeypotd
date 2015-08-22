@@ -41,7 +41,7 @@ static void usage(struct globals_t* g)
 		"  -b, --address ADDRESS the IP address to bind to (default: 0.0.0.0)\n"
 		"  -p, --port PORT       the port to bind to (default: 22)\n"
 		"  -P, --pid FILE        the PID file\n"
-		"                        (default: /var/run/ssh-honeypotd/ssh-honeypotd.pid)\n"
+		"                        (default: /run/ssh-honeypotd/ssh-honeypotd.pid)\n"
 		"  -n, --name NAME       the name of the daemon for syslog\n"
 		"                        (default: ssh-honeypotd)\n"
 		"  -u, --user USER       drop privileges and switch to this USER\n"
@@ -213,7 +213,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 	}
 
 	if (!g->pid_file) {
-		g->pid_file = strdup("/var/run/ssh-honeypotd/ssh-honeypotd.pid");
+		g->pid_file = strdup("/run/ssh-honeypotd/ssh-honeypotd.pid");
 	}
 	else if (g->pid_file[0] != '/') {
 		char buf[PATH_MAX+1];
