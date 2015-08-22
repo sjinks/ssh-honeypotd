@@ -29,6 +29,12 @@ static void set_options(struct globals_t* globals)
 		ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_RSAKEY, globals->rsa_key);
 	}
 
+#ifdef SSH_BIND_OPTIONS_ECDSAKEY
+	if (globals->ecdsa_key) {
+		ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_ECDSAKEY, globals->ecdsa_key);
+	}
+#endif
+
 	if (globals->host_key) {
 		ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_HOSTKEY, globals->host_key);
 	}

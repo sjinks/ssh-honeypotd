@@ -1,4 +1,4 @@
-#ifndef GLOBALS_H_
+	#ifndef GLOBALS_H_
 #define GLOBALS_H_
 
 #include <stddef.h>
@@ -17,6 +17,9 @@ struct connection_info_t {
 struct globals_t {
 	char* rsa_key;
 	char* dsa_key;
+#ifdef SSH_BIND_OPTIONS_ECDSAKEY
+	char* ecdsa_key;
+#endif
 	char* host_key;
 	char* bind_address;
 	char* bind_port;

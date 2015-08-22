@@ -7,6 +7,9 @@ void init_globals(struct globals_t* g)
 {
 	g->rsa_key      = NULL;
 	g->dsa_key      = NULL;
+#ifdef SSH_BIND_OPTIONS_ECDSAKEY
+	g->ecdsa_key    = NULL;
+#endif
 	g->host_key     = NULL;
 	g->bind_address = NULL;
 	g->bind_port    = NULL;
@@ -66,6 +69,9 @@ void free_globals(struct globals_t* g)
 
 	if (g->rsa_key)      free(g->rsa_key);
 	if (g->dsa_key)      free(g->dsa_key);
+#ifdef SSH_BIND_OPTIONS_ECDSAKEY
+	if (g->ecdsa_key)    free(g->ecdsa_key);
+#endif
 	if (g->host_key)     free(g->host_key);
 	if (g->bind_address) free(g->bind_address);
 	if (g->bind_port)    free(g->bind_port);
