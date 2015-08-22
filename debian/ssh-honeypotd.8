@@ -15,6 +15,9 @@ the file containing the private host RSA key (SSH2)
 \fB\-d\fR, \fB\-\-dsa\-key\fR FILE
 the file containing the private host DSA key (SSH2)
 .TP
+\fB\-e\fR, \fB\-\-ecdsa\-key\fR FILE
+the file containing the private host ECDSA key (SSH2; only if supported by libssh)
+.TP
 \fB\-k\fR, \fB\-\-host\-key\fR FILE
 the file containing the private host key (SSH1)
 .TP
@@ -25,7 +28,7 @@ the IP address to bind to (default: 0.0.0.0)
 the port to bind to (default: 22)
 .TP
 \fB\-P\fR, \fB\-\-pid\fR FILE
-the PID file (default: \fI/var/run/ssh\-honeypotd/ssh\-honeypotd.pid\fP)
+the PID file (default: \fI/run/ssh\-honeypotd/ssh\-honeypotd.pid\fP)
 .TP
 \fB\-n\fR, \fB\-\-name\fR NAME
 the name of the daemon for syslog (default: ssh\-honeypotd)
