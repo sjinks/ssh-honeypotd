@@ -73,7 +73,7 @@ static void daemonize(struct globals_t* globals)
 	}
 }
 
-void spawn_thread(struct globals_t* globals, pthread_attr_t* attr, ssh_session session)
+static void spawn_thread(struct globals_t* globals, pthread_attr_t* attr, ssh_session session)
 {
 	size_t num_threads;
 	struct connection_info_t* conn = malloc(sizeof(struct connection_info_t));
@@ -109,7 +109,7 @@ void spawn_thread(struct globals_t* globals, pthread_attr_t* attr, ssh_session s
 	}
 }
 
-void main_loop(struct globals_t* globals)
+static void main_loop(struct globals_t* globals)
 {
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
@@ -135,21 +135,25 @@ void main_loop(struct globals_t* globals)
 	pthread_attr_destroy(&attr);
 }
 
+static void goodbye(void)
+{
+	free_globals(&globals);
+}
+
 int main(int argc, char** argv)
 {
 	init_globals(&globals);
+	atexit(goodbye);
 	parse_options(argc, argv, &globals);
 
 	globals.pid_fd = create_pid_file(globals.pid_file);
 	if (globals.pid_fd == -1) {
 		fprintf(stderr, "Error creating PID file %s\n", globals.pid_file);
-		free_globals(&globals);
 		return EXIT_FAILURE;
 	}
 
 	if (globals.pid_fd == -2) {
 		fprintf(stderr, "ssh-honeypotd is already running\n");
-		free_globals(&globals);
 		return EXIT_SUCCESS;
 	}
 
@@ -157,7 +161,6 @@ int main(int argc, char** argv)
 
 	if (ssh_bind_listen(globals.sshbind) < 0) {
 		fprintf(stderr, "Error listening to socket: %s\n", ssh_get_error(globals.sshbind));
-		free_globals(&globals);
 		return EXIT_FAILURE;
 	}
 
@@ -165,11 +168,9 @@ int main(int argc, char** argv)
 	daemonize(&globals);
 	if (write_pid(globals.pid_fd)) {
 		syslog(LOG_CRIT, "Failed to write to the PID file: %s", strerror(errno));
-		free_globals(&globals);
 		return EXIT_FAILURE;
 	}
 
 	main_loop(&globals);
-	free_globals(&globals);
 	return 0;
 }
