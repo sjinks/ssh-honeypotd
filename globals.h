@@ -28,13 +28,13 @@ struct globals_t {
 
 	ssh_bind sshbind;
 
-	volatile size_t n_threads;
-	volatile sig_atomic_t terminate;
-
 	pthread_mutex_t mutex;
 
 	struct connection_info_t* head;
 	struct connection_info_t* tail;
+
+	volatile size_t n_threads;
+	volatile sig_atomic_t terminate;
 
 	int pid_fd;
 	int foreground;

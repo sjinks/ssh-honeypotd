@@ -43,10 +43,10 @@ static int find_account(uid_t* uid, gid_t* gid)
 	return -1;
 }
 
-int drop_privs(struct globals_t* globals)
+int drop_privs(struct globals_t* g)
 {
 	if (0 == geteuid()) {
-		if (!globals->uid_set || !globals->gid_set) {
+		if (!g->uid_set || !g->gid_set) {
 			uid_t uid;
 			gid_t gid;
 
@@ -54,21 +54,21 @@ int drop_privs(struct globals_t* globals)
 				return DP_NO_UNPRIV_ACCOUNT;
 			}
 
-			if (!globals->uid_set) {
-				globals->uid_set = 1;
-				globals->uid     = uid;
+			if (!g->uid_set) {
+				g->uid_set = 1;
+				g->uid     = uid;
 			}
 
-			if (!globals->gid_set) {
-				globals->gid_set = 1;
-				globals->gid     = gid;
+			if (!g->gid_set) {
+				g->gid_set = 1;
+				g->gid     = gid;
 			}
 		}
 
 		if (
 			   setgroups(0, NULL)
-			|| setgid(globals->gid)
-			|| setuid(globals->uid)
+			|| setgid(g->gid)
+			|| setuid(g->uid)
 		) {
 			return DP_GENERAL_FAILURE;
 		}

@@ -26,6 +26,9 @@ static struct option long_options[] = {
 	{ "version",   no_argument,       0, 'v' }
 };
 
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((noreturn))
+#endif
 static void usage(struct globals_t* g)
 {
 	printf(
@@ -59,6 +62,9 @@ static void usage(struct globals_t* g)
 	exit(0);
 }
 
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((noreturn))
+#endif
 static void version(struct globals_t* g)
 {
 	printf(
@@ -183,11 +189,13 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 
 			case 'h':
 				usage(g);
-				break;
+				/* unreachable */
+				/* no break */
 
 			case 'v':
 				version(g);
-				break;
+				/* unreachable */
+				/* no break */
 
 			case '?':
 			default:

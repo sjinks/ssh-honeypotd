@@ -16,38 +16,38 @@
 
 struct globals_t globals;
 
-static void set_options(struct globals_t* globals)
+static void set_options(struct globals_t* g)
 {
-	ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_BINDADDR, globals->bind_address);
-	ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_BINDPORT_STR, globals->bind_port);
+	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BINDADDR, g->bind_address);
+	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BINDPORT_STR, g->bind_port);
 
-	if (globals->dsa_key) {
-		ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_DSAKEY, globals->dsa_key);
+	if (g->dsa_key) {
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_DSAKEY, g->dsa_key);
 	}
 
-	if (globals->rsa_key) {
-		ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_RSAKEY, globals->rsa_key);
+	if (g->rsa_key) {
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_RSAKEY, g->rsa_key);
 	}
 
 #ifdef SSH_BIND_OPTIONS_ECDSAKEY
-	if (globals->ecdsa_key) {
-		ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_ECDSAKEY, globals->ecdsa_key);
+	if (g->ecdsa_key) {
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_ECDSAKEY, g->ecdsa_key);
 	}
 #endif
 
-	if (globals->host_key) {
-		ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_HOSTKEY, globals->host_key);
+	if (g->host_key) {
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->host_key);
 	}
 
-	ssh_bind_options_set(globals->sshbind, SSH_BIND_OPTIONS_BANNER, "OpenSSH");
+	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BANNER, "OpenSSH");
 }
 
-static void daemonize(struct globals_t* globals)
+static void daemonize(struct globals_t* g)
 {
 	int res;
 
 	set_signals();
-	res = drop_privs(globals);
+	res = drop_privs(g);
 	if (res != 0) {
 		switch (res) {
 			case DP_NO_UNPRIV_ACCOUNT:
@@ -60,20 +60,20 @@ static void daemonize(struct globals_t* globals)
 				break;
 		}
 
-		free_globals(globals);
+		free_globals(g);
 		exit(EXIT_FAILURE);
 	}
 
-	if (!globals->foreground) {
+	if (!g->foreground) {
 		if (daemon(0, 0)) {
 			perror("daemon");
-			free_globals(globals);
+			free_globals(g);
 			exit(EXIT_FAILURE);
 		}
 	}
 }
 
-static void spawn_thread(struct globals_t* globals, pthread_attr_t* attr, ssh_session session)
+static void spawn_thread(struct globals_t* g, pthread_attr_t* attr, ssh_session session)
 {
 	size_t num_threads;
 	struct connection_info_t* conn = malloc(sizeof(struct connection_info_t));
@@ -87,17 +87,17 @@ static void spawn_thread(struct globals_t* globals, pthread_attr_t* attr, ssh_se
 	conn->next    = NULL;
 	conn->session = session;
 
-	pthread_mutex_lock(&globals->mutex);
+	pthread_mutex_lock(&g->mutex);
 	{
-		if (!globals->head) globals->head       = conn;
-		if (globals->tail)  globals->tail->next = conn;
+		if (!g->head) g->head       = conn;
+		if (g->tail)  g->tail->next = conn;
 
-		conn->prev    = globals->tail;
-		globals->tail = conn;
-		num_threads   = globals->n_threads;
-		++globals->n_threads;
+		conn->prev  = g->tail;
+		g->tail     = conn;
+		num_threads = g->n_threads;
+		++g->n_threads;
 	}
-	pthread_mutex_unlock(&globals->mutex);
+	pthread_mutex_unlock(&g->mutex);
 
 	if (num_threads > MAX_THREADS) {
 		syslog(LOG_ERR, "Too many connections");
@@ -109,27 +109,27 @@ static void spawn_thread(struct globals_t* globals, pthread_attr_t* attr, ssh_se
 	}
 }
 
-static void main_loop(struct globals_t* globals)
+static void main_loop(struct globals_t* g)
 {
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setstacksize(&attr, 65536);
 
-	while (!globals->terminate) {
+	while (!g->terminate) {
 		const long int timeout = SESSION_TIMEOUT;
 		ssh_session session    = ssh_new();
 		ssh_options_set(session, SSH_OPTIONS_TIMEOUT, &timeout);
-		int r = ssh_bind_accept(globals->sshbind, session);
+		int r = ssh_bind_accept(g->sshbind, session);
 		if (r == SSH_ERROR) {
-			if (globals->terminate) {
+			if (g->terminate) {
 				break;
 			}
 
-			syslog(LOG_WARNING, "Error accepting a connection: %s\n", ssh_get_error(globals->sshbind));
+			syslog(LOG_WARNING, "Error accepting a connection: %s\n", ssh_get_error(g->sshbind));
 			continue;
 		}
 
-		spawn_thread(globals, &attr, session);
+		spawn_thread(g, &attr, session);
 	}
 
 	pthread_attr_destroy(&attr);

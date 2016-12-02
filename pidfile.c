@@ -9,7 +9,7 @@
 
 #define BUF_SIZE 64
 
-static int lock_file(int fd, int type, short int whence, off_t start, off_t len)
+static int lock_file(int fd, short int type, short int whence, off_t start, off_t len)
 {
 	struct flock fl;
 
@@ -68,7 +68,7 @@ int write_pid(int fd)
 	}
 #endif
 
-	if (write(fd, buf, strlen(buf)) != strlen(buf)) {
+	if (write(fd, buf, strlen(buf)) != (ssize_t)strlen(buf)) {
 		return -1;
 	}
 
