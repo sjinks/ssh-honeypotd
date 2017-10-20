@@ -10,20 +10,22 @@
 #include "cmdline.h"
 
 static struct option long_options[] = {
-	{ "rsa-key",   required_argument, 0, 'r' },
-	{ "dsa-key",   required_argument, 0, 'd' },
+	{ "rsa-key",    required_argument, 0, 'r' },
+	{ "dsa-key",    required_argument, 0, 'd' },
 #ifdef SSH_BIND_OPTIONS_ECDSAKEY
-	{ "ecdsa-key", required_argument, 0, 'e' },
+	{ "ecdsa-key",  required_argument, 0, 'e' },
 #endif
-	{ "host-key",  required_argument, 0, 'k' },
-	{ "address",   required_argument, 0, 'b' },
-	{ "port",      required_argument, 0, 'p' },
-	{ "pid",       required_argument, 0, 'P' },
-	{ "name",      required_argument, 0, 'n' },
-	{ "user",      required_argument, 0, 'u' },
-	{ "group",     required_argument, 0, 'g' },
-	{ "help",      no_argument,       0, 'h' },
-	{ "version",   no_argument,       0, 'v' }
+	{ "host-key",   required_argument, 0, 'k' },
+	{ "address",    required_argument, 0, 'b' },
+	{ "port",       required_argument, 0, 'p' },
+	{ "pid",        required_argument, 0, 'P' },
+	{ "name",       required_argument, 0, 'n' },
+	{ "user",       required_argument, 0, 'u' },
+	{ "group",      required_argument, 0, 'g' },
+	{ "help",       no_argument,       0, 'h' },
+	{ "version",    no_argument,       0, 'v' },
+	{ "foreground", no_argument,       0, 'f' },
+	{ 0,            0,                 0, 0   }
 };
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -52,13 +54,12 @@ static void usage(struct globals_t* g)
 		"  -g, --group GROUP     drop privileges and switch to this GROUP\n"
 		"                        (default: daemon or nogroup)\n"
 		"  -f, --foreground      do not daemonize\n"
-		"      --help            display this help and exit\n"
+		"  -h, --help            display this help and exit\n"
 		"  -v, --version         output version information and exit\n\n"
 		"One of -r, -d, or -k must be specified.\n\n"
 		"Please report bugs here: <https://github.com/sjinks/ssh-honeypotd/issues>\n"
 	);
 
-	free_globals(g);
 	exit(0);
 }
 
@@ -68,12 +69,11 @@ __attribute__((noreturn))
 static void version(struct globals_t* g)
 {
 	printf(
-		"ssh-honeypotd 0.3\n"
-		"Copyright (c) 2014, Volodymyr Kolesnykov <volodymyr@wildwolf.name>\n"
+		"ssh-honeypotd 0.4\n"
+		"Copyright (c) 2014-2017, Volodymyr Kolesnykov <volodymyr@wildwolf.name>\n"
 		"License: MIT <http://opensource.org/licenses/MIT>\n"
 	);
 
-	free_globals(g);
 	exit(0);
 }
 
@@ -81,7 +81,11 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 {
 	while (1) {
 		int option_index = 0;
-		int c = getopt_long(argc, argv, "r:d:k:b:p:P:n:c:u:g:vf", long_options, &option_index);
+#ifdef SSH_BIND_OPTIONS_ECDSAKEY
+		int c = getopt_long(argc, argv, "r:d:e:k:b:p:P:n:u:g:vfh", long_options, &option_index);
+#else
+		int c = getopt_long(argc, argv, "r:d:k:b:p:P:n:u:g:vfh", long_options, &option_index);
+#endif
 		if (-1 == c) {
 			break;
 		}
@@ -121,7 +125,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 				g->host_key = strdup(optarg);
 				break;
 
-			case 'a':
+			case 'b':
 				if (g->bind_address) {
 					free(g->bind_address);
 				}

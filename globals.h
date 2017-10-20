@@ -1,4 +1,4 @@
-	#ifndef GLOBALS_H_
+#ifndef GLOBALS_H_
 #define GLOBALS_H_
 
 #include <stddef.h>

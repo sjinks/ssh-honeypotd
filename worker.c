@@ -20,7 +20,7 @@ static void get_ip_port(const struct sockaddr_storage* addr, char* ipstr, int* p
 		*port = ntohs(s->sin_port);
 		inet_ntop(AF_INET, &s->sin_addr, ipstr, INET6_ADDRSTRLEN);
 	}
-	else if (addr->ss_family == AF_INET6) { // AF_INET6
+	else if (addr->ss_family == AF_INET6) {
 		const struct sockaddr_in6* s = (const struct sockaddr_in6*)addr;
 		*port = ntohs(s->sin6_port);
 		inet_ntop(AF_INET6, &s->sin6_addr, ipstr, INET6_ADDRSTRLEN);
