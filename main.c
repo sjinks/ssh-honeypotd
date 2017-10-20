@@ -60,14 +60,12 @@ static void daemonize(struct globals_t* g)
 				break;
 		}
 
-		free_globals(g);
 		exit(EXIT_FAILURE);
 	}
 
 	if (!g->foreground) {
 		if (daemon(0, 0)) {
 			perror("daemon");
-			free_globals(g);
 			exit(EXIT_FAILURE);
 		}
 	}
