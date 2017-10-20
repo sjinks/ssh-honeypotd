@@ -238,7 +238,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 			newbuf         = calloc(cwd_len + pid_len + 2, 1);
 			if (newbuf) {
 				memcpy(newbuf, cwd, cwd_len);
-				newbuf[cwd_len + 1] = '/';
+				newbuf[cwd_len] = '/';
 				memcpy(newbuf + cwd_len + 1, g->pid_file, pid_len);
 			}
 		}
