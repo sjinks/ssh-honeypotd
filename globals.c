@@ -30,8 +30,7 @@ void init_globals(struct globals_t* g)
 		exit(EXIT_FAILURE);
 	}
 
-	g->sshbind = ssh_bind_new();
-
+	g->sshbind    = ssh_bind_new();
 	g->pid_fd     = -1;
 	g->foreground = 0;
 	g->uid_set    = 0;
@@ -67,16 +66,16 @@ void free_globals(struct globals_t* g)
 		close(g->pid_fd);
 	}
 
-	if (g->rsa_key)      free(g->rsa_key);
-	if (g->dsa_key)      free(g->dsa_key);
+	free(g->rsa_key);
+	free(g->dsa_key);
 #if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
-	if (g->ecdsa_key)    free(g->ecdsa_key);
+	free(g->ecdsa_key);
 #endif
-	if (g->host_key)     free(g->host_key);
-	if (g->bind_address) free(g->bind_address);
-	if (g->bind_port)    free(g->bind_port);
-	if (g->pid_file)     free(g->pid_file);
-	if (g->daemon_name)  free(g->daemon_name);
+	free(g->host_key);
+	free(g->bind_address);
+	free(g->bind_port);
+	free(g->pid_file);
+	free(g->daemon_name);
 
 	wait_for_threads(g);
 	pthread_mutex_destroy(&g->mutex);

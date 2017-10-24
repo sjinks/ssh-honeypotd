@@ -92,68 +92,44 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 
 		switch (c) {
 			case 'r':
-				if (g->rsa_key) {
-					free(g->rsa_key);
-				}
-
+				free(g->rsa_key);
 				g->rsa_key = strdup(optarg);
 				break;
 
 			case 'd':
-				if (g->dsa_key) {
-					free(g->dsa_key);
-				}
-
+				free(g->dsa_key);
 				g->dsa_key = strdup(optarg);
 				break;
 
 #if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
 			case 'e':
-				if (g->ecdsa_key) {
-					free(g->ecdsa_key);
-				}
-
+				free(g->ecdsa_key);
 				g->ecdsa_key = strdup(optarg);
 				break;
 #endif
 
 			case 'k':
-				if (g->host_key) {
-					free(g->host_key);
-				}
-
+				free(g->host_key);
 				g->host_key = strdup(optarg);
 				break;
 
 			case 'b':
-				if (g->bind_address) {
-					free(g->bind_address);
-				}
-
+				free(g->bind_address);
 				g->bind_address = strdup(optarg);
 				break;
 
 			case 'p':
-				if (g->bind_port) {
-					free(g->bind_port);
-				}
-
+				free(g->bind_port);
 				g->bind_port = strdup(optarg);
 				break;
 
 			case 'P':
-				if (g->pid_file) {
-					free(g->pid_file);
-				}
-
+				free(g->pid_file);
 				g->pid_file = strdup(optarg);
 				break;
 
 			case 'n':
-				if (g->daemon_name) {
-					free(g->daemon_name);
-				}
-
+				free(g->daemon_name);
 				g->daemon_name = strdup(optarg);
 				break;
 
