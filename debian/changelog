@@ -3,7 +3,7 @@ ssh-honeypotd (0.5.0) xenial; urgency=low
   * Support for ED25519 keys
   * Dropped support for RSA1 keys (SSH1 protocol)
 
- -- Volodymyr Kolesnykov <volodymyr@wildwolf.name>  Mon, 24 Oct 2017 21:14:00 +0300
+ -- Volodymyr Kolesnykov <volodymyr@wildwolf.name>  Tue, 24 Oct 2017 21:14:00 +0300
 
 ssh-honeypotd (0.3.0) trusty; urgency=low
 
