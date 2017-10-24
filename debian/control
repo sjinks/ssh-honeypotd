@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Volodymyr Kolesnykov <volodymyr@wildwolf.name>
 Build-Depends: debhelper (>= 7.0.50~), libssh-dev, dh-apparmor
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Vcs-Git: https://github.com/sjinks/ssh-honeypotd.git
 
 Package: ssh-honeypotd
