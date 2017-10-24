@@ -7,7 +7,7 @@ void init_globals(struct globals_t* g)
 {
 	g->rsa_key      = NULL;
 	g->dsa_key      = NULL;
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 	g->ecdsa_key    = NULL;
 #endif
 	g->host_key     = NULL;
@@ -68,7 +68,7 @@ void free_globals(struct globals_t* g)
 
 	free(g->rsa_key);
 	free(g->dsa_key);
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 	free(g->ecdsa_key);
 #endif
 	free(g->host_key);

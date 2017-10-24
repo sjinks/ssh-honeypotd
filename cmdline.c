@@ -12,7 +12,7 @@
 static struct option long_options[] = {
 	{ "rsa-key",    required_argument, 0, 'r' },
 	{ "dsa-key",    required_argument, 0, 'd' },
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 	{ "ecdsa-key",  required_argument, 0, 'e' },
 #endif
 	{ "host-key",   required_argument, 0, 'k' },
@@ -39,7 +39,7 @@ static void usage(struct globals_t* g)
 		"Mandatory arguments to long options are mandatory for short options too.\n"
 		"  -r, --rsa-key FILE    the file containing the private host RSA key (SSH2)\n"
 		"  -d, --dsa-key FILE    the file containing the private host DSA key (SSH2)\n"
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 		"  -e, --ecdsa-key FILE  the file containing the private host ECDSA key (SSH2)\n"
 #endif
 		"  -k, --host-key FILE   the file containing the private host key (SSH1)\n"
@@ -81,7 +81,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 {
 	while (1) {
 		int option_index = 0;
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 		int c = getopt_long(argc, argv, "r:d:e:k:b:p:P:n:u:g:vfh", long_options, &option_index);
 #else
 		int c = getopt_long(argc, argv, "r:d:k:b:p:P:n:u:g:vfh", long_options, &option_index);
@@ -101,7 +101,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 				g->dsa_key = strdup(optarg);
 				break;
 
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 			case 'e':
 				free(g->ecdsa_key);
 				g->ecdsa_key = strdup(optarg);
