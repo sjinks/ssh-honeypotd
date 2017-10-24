@@ -29,7 +29,7 @@ static void set_options(struct globals_t* g)
 		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_RSAKEY, g->rsa_key);
 	}
 
-#ifdef SSH_BIND_OPTIONS_ECDSAKEY
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 0)
 	if (g->ecdsa_key) {
 		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_ECDSAKEY, g->ecdsa_key);
 	}
