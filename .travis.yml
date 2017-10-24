@@ -1,5 +1,8 @@
 language: c
 
+dist: trusty
+sudo: true
+
 compiler:
   - gcc
   - clang
@@ -8,7 +11,9 @@ before_install:
   - sudo apt-get -qq update
 
 install:
-  - sudo apt-get -qq install libssh-dev
+  - sudo apt-get -qq install libssh-dev git-buildpackage dh-apparmor devscripts debhelper
 
 script:
   - make
+  - gbp buildpackage --git-verbose --git-notify=off --git-verbose --git-ignore-branch --git-notify=off --git-force-create -i -us -uc -S -sa
+  - gbp buildpackage --git-verbose --git-notify=off --git-verbose --git-ignore-branch --git-notify=off --git-force-create -i -us -uc -b
