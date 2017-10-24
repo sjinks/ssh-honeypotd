@@ -22,21 +22,19 @@ static void set_options(struct globals_t* g)
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BINDPORT_STR, g->bind_port);
 
 	if (g->dsa_key) {
-		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_DSAKEY, g->dsa_key);
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->dsa_key);
 	}
 
 	if (g->rsa_key) {
-		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_RSAKEY, g->rsa_key);
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->rsa_key);
 	}
 
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 	if (g->ecdsa_key) {
-		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_ECDSAKEY, g->ecdsa_key);
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->ecdsa_key);
 	}
-#endif
 
-	if (g->host_key) {
-		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->host_key);
+	if (g->ed25519_key) {
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->ed25519_key);
 	}
 
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BANNER, "OpenSSH");

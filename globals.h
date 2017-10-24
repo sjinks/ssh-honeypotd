@@ -17,10 +17,8 @@ struct connection_info_t {
 struct globals_t {
 	char* rsa_key;
 	char* dsa_key;
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 	char* ecdsa_key;
-#endif
-	char* host_key;
+	char* ed25519_key;
 	char* bind_address;
 	char* bind_port;
 	char* pid_file;
