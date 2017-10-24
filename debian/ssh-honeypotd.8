@@ -3,54 +3,48 @@
 ssh-honeypotd \- low\-interaction SSH daemon
 .SH SYNOPSIS
 .B ssh-honeypotd
-[\fIoptions\fR]...
+[\fI\,options\/\fR]...
 .SH DESCRIPTION
 Low\-interaction SSH honeypot
 .PP
 Mandatory arguments to long options are mandatory for short options too.
 .TP
-\fB\-r\fR, \fB\-\-rsa\-key\fR FILE
-the file containing the private host RSA key (SSH2)
-.TP
-\fB\-d\fR, \fB\-\-dsa\-key\fR FILE
-the file containing the private host DSA key (SSH2)
-.TP
-\fB\-e\fR, \fB\-\-ecdsa\-key\fR FILE
-the file containing the private host ECDSA key (SSH2; only if supported by libssh)
-.TP
 \fB\-k\fR, \fB\-\-host\-key\fR FILE
-the file containing the private host key (SSH1)
-.TP
-\fB\-b\fR, \fB\-\-address\fR ADDRESS
-the IP address to bind to (default: 0.0.0.0)
+the file containing the private host key (RSA, DSA, ECDSA, ED25519)
+.HP
+\fB\-b\fR, \fB\-\-address\fR ADDRESS the IP address to bind to (default: 0.0.0.0)
 .TP
 \fB\-p\fR, \fB\-\-port\fR PORT
 the port to bind to (default: 22)
 .TP
 \fB\-P\fR, \fB\-\-pid\fR FILE
-the PID file (default: \fI/run/ssh\-honeypotd/ssh\-honeypotd.pid\fP)
+the PID file
+(default: \fI\,/run/ssh\-honeypotd/ssh\-honeypotd.pid\/\fP)
 .TP
 \fB\-n\fR, \fB\-\-name\fR NAME
-the name of the daemon for syslog (default: ssh\-honeypotd)
+the name of the daemon for syslog
+(default: ssh\-honeypotd)
 .TP
 \fB\-u\fR, \fB\-\-user\fR USER
-drop privileges and switch to this user (default: \fIdaemon\fP or \fInobody\fP)
+drop privileges and switch to this USER
+(default: daemon or nobody)
 .TP
-\fB-g\fR, \fB\-\-group\fR NAME
-drop privileges and switch to this group (default: \fIdaemon\fP or \fInogroup\fP)
+\fB\-g\fR, \fB\-\-group\fR GROUP
+drop privileges and switch to this GROUP
+(default: daemon or nogroup)
 .TP
-\fB-f\fR, \fB\-\-foreground\fR
+\fB\-f\fR, \fB\-\-foreground\fR
 do not daemonize
 .TP
-\fB\-\-help\fR
+\fB\-h\fR, \fB\-\-help\fR
 display this help and exit
 .TP
 \fB\-v\fR, \fB\-\-version\fR
 output version information and exit
 .PP
-One of \fB\-r\fR, \fB\-d\fR, or \fB\-k\fR must be specified.
+\fB\-k\fR option must be specified at least once.
 .PP
 Please report bugs here: <https://github.com/sjinks/ssh\-honeypotd/issues>
 .SH COPYRIGHT
-Copyright \(co 2014, Volodymyr Kolesnykov <volodymyr@wildwolf.name>
+Copyright \(co 2014\-2017, Volodymyr Kolesnykov <volodymyr@wildwolf.name>
 License: MIT <http://opensource.org/licenses/MIT>

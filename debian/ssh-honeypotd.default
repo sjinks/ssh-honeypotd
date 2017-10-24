@@ -1,3 +1,3 @@
-DAEMON_ARGS="-r /etc/ssh-honeypotd/ssh_host_rsa_key -d /etc/ssh-honeypotd/ssh_host_dsa_key -k /etc/ssh-honeypotd/ssh_host_key -p 22 -b 0.0.0.0"
+DAEMON_ARGS="-k /etc/ssh-honeypotd/ssh_host_rsa_key -k /etc/ssh-honeypotd/ssh_host_dsa_key -p 22 -b 0.0.0.0"
 DAEMON_USER=sshhoneypotd
 DAEMON_GROUP=sshhoneypotd

@@ -18,15 +18,15 @@ case "$1" in
 		addgroup --system sshhoneypotd || true
 		adduser --system --home /nonexistent --no-create-home --disabled-password --ingroup sshhoneypotd sshhoneypotd
 		if [ -x "$(command -v ssh-keygen)" ]; then
-			[ -f /etc/ssh-honeypotd/ssh_host_dsa_key ]   || ssh-keygen -f /etc/ssh-honeypotd/ssh_host_dsa_key   -N '' -t dsa   || true
-			[ -f /etc/ssh-honeypotd/ssh_host_rsa_key ]   || ssh-keygen -f /etc/ssh-honeypotd/ssh_host_rsa_key   -N '' -t rsa   || true
-			[ -f /etc/ssh-honeypotd/ssh_host_key ]       || ssh-keygen -f /etc/ssh-honeypotd/ssh_host_key       -N '' -t rsa1  || true
-			[ -f /etc/ssh-honeypotd/ssh_host_ecdsa_key ] || ssh-keygen -f /etc/ssh-honeypotd/ssh_host_ecdsa_key -N '' -t ecdsa || true
+			[ -f /etc/ssh-honeypotd/ssh_host_dsa_key ]     || ssh-keygen -f /etc/ssh-honeypotd/ssh_host_dsa_key     -N '' -t dsa     || true
+			[ -f /etc/ssh-honeypotd/ssh_host_rsa_key ]     || ssh-keygen -f /etc/ssh-honeypotd/ssh_host_rsa_key     -N '' -t rsa     || true
+			[ -f /etc/ssh-honeypotd/ssh_host_ecdsa_key ]   || ssh-keygen -f /etc/ssh-honeypotd/ssh_host_ecdsa_key   -N '' -t ecdsa   || true
+			[ -f /etc/ssh-honeypotd/ssh_host_ed25519_key ] || ssh-keygen -f /etc/ssh-honeypotd/ssh_host_ed25519_key -N '' -t ed25519 || true
 		else
-			[ -f /etc/ssh-honeypotd/ssh_host_dsa_key ]   || (cp -f /etc/ssh-honeypotd/ssh_host_dsa_key.dist   /etc/ssh-honeypotd/ssh_host_dsa_key   && cp -f /etc/ssh-honeypotd/ssh_host_dsa_key.pub.dist   /etc/ssh-honeypotd/ssh_host_dsa_key.pub)   || true
-			[ -f /etc/ssh-honeypotd/ssh_host_rsa_key ]   || (cp -f /etc/ssh-honeypotd/ssh_host_rsa_key.dist   /etc/ssh-honeypotd/ssh_host_rsa_key   && cp -f /etc/ssh-honeypotd/ssh_host_rsa_key.pub.dist   /etc/ssh-honeypotd/ssh_host_rsa_key.pub)   || true
-			[ -f /etc/ssh-honeypotd/ssh_host_ecdsa_key ] || (cp -f /etc/ssh-honeypotd/ssh_host_ecdsa_key.dist /etc/ssh-honeypotd/ssh_host_ecdsa_key && cp -f /etc/ssh-honeypotd/ssh_host_ecdsa_key.pub.dist /etc/ssh-honeypotd/ssh_host_ecdsa_key.pub) || true
-			[ -f /etc/ssh-honeypotd/ssh_host_key ]       || (cp -f /etc/ssh-honeypotd/ssh_host_key.dist       /etc/ssh-honeypotd/ssh_host_key       && cp -f /etc/ssh-honeypotd/ssh_host_key.pub.dist       /etc/ssh-honeypotd/ssh_host_key.pub)       || true
+			[ -f /etc/ssh-honeypotd/ssh_host_dsa_key ]     || (cp -f /etc/ssh-honeypotd/ssh_host_dsa_key.dist     /etc/ssh-honeypotd/ssh_host_dsa_key     && cp -f /etc/ssh-honeypotd/ssh_host_dsa_key.pub.dist     /etc/ssh-honeypotd/ssh_host_dsa_key.pub)     || true
+			[ -f /etc/ssh-honeypotd/ssh_host_rsa_key ]     || (cp -f /etc/ssh-honeypotd/ssh_host_rsa_key.dist     /etc/ssh-honeypotd/ssh_host_rsa_key     && cp -f /etc/ssh-honeypotd/ssh_host_rsa_key.pub.dist     /etc/ssh-honeypotd/ssh_host_rsa_key.pub)     || true
+			[ -f /etc/ssh-honeypotd/ssh_host_ecdsa_key ]   || (cp -f /etc/ssh-honeypotd/ssh_host_ecdsa_key.dist   /etc/ssh-honeypotd/ssh_host_ecdsa_key   && cp -f /etc/ssh-honeypotd/ssh_host_ecdsa_key.pub.dist   /etc/ssh-honeypotd/ssh_host_ecdsa_key.pub)   || true
+			[ -f /etc/ssh-honeypotd/ssh_host_ed25519_key ] || (cp -f /etc/ssh-honeypotd/ssh_host_ed25519.key.dist /etc/ssh-honeypotd/ssh_host_ed25519_key && cp -f /etc/ssh-honeypotd/ssh_host_ed25519_key.pub.dist /etc/ssh-honeypotd/ssh_host_ed25519_key.pub) || true
 		fi
 	;;
 
