@@ -15,6 +15,7 @@ addons:
     - dh-apparmor
     - devscripts
     - debhelper
+    - fakeroot
 
 script:
   - make
