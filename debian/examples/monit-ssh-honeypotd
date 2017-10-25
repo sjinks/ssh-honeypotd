@@ -1,4 +1,4 @@
-check process ssh-honeypotd with pidfile /run/ssh-honeypotd.pid
+check process ssh-honeypotd with pidfile /run/ssh-honeypotd/ssh-honeypotd.pid
 	group system
 	group ssh-honeypotd
 	start program = "/etc/init.d/ssh-honeypotd start"
