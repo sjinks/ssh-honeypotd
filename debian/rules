@@ -3,7 +3,7 @@
 CFLAGS += -O2 -g3
 
 %:
-	dh $@
+	dh $@ --with systemd
 
 override_dh_install:
 	dh_apparmor --profile-name=usr.sbin.ssh-honeypotd -p ssh-honeypotd

@@ -20,7 +20,6 @@ addons:
 
 script:
   - make
-  - sed -i -r 's/debhelper \(>= [^7][^)]+\)/debhelper (>= 7.0.50~), dh-systemd (>= 1.5)/' debian/control
-  - sed -i -r 's/dh \$@$/dh $@ --with systemd/' debian/rules
+  - sed -i -r 's/debhelper \(>= [^7][^)]+\)/debhelper (>= 7.0.50~)/' debian/control
   - gbp buildpackage --git-verbose --git-ignore-new --git-notify=off --git-verbose --git-ignore-branch --git-notify=off --git-force-create -i -us -uc -S -sa
   - gbp buildpackage --git-verbose --git-ignore-new --git-notify=off --git-verbose --git-ignore-branch --git-notify=off --git-force-create -i -us -uc -b
