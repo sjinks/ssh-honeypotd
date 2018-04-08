@@ -13,6 +13,7 @@ addons:
     - libssh-dev
     - git-buildpackage
     - dh-apparmor
+    - dh-systemd
     - devscripts
     - debhelper
     - fakeroot

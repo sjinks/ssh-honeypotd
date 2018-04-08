@@ -13,4 +13,4 @@ override_dh_auto_build:
 	make CFLAGS="$(CFLAGS)"
 
 override_dh_strip:
-	dh_strip -s --dbg-package=ssh-honeypotd-dbg
+	dh_strip --dbg-package=ssh-honeypotd-dbg
