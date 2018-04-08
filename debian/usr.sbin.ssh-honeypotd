@@ -11,6 +11,7 @@
 
   /etc/nsswitch.conf r,
   /etc/passwd r,
+  /etc/group r,
   /etc/ssh-honeypotd/* r,
   /run/ssh-honeypotd/ssh-honeypotd.pid rwk,
   /usr/sbin/ssh-honeypotd mr,
