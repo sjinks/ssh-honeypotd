@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -74,6 +75,8 @@ static void version(struct globals_t* g)
 
 void parse_options(int argc, char** argv, struct globals_t* g)
 {
+	assert(g != NULL);
+
 	while (1) {
 		int option_index = 0;
 		int c = getopt_long(argc, argv, "r:d:e:k:b:p:P:n:u:g:vfh", long_options, &option_index);
