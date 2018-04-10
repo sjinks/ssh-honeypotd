@@ -53,7 +53,13 @@ static void usage(struct globals_t* g)
 		"  -h, --help            display this help and exit\n"
 		"  -v, --version         output version information and exit\n\n"
 		"-k option must be specified at least once.\n\n"
-		"Please report bugs here: <https://github.com/sjinks/ssh-honeypotd/issues>\n"
+		"Please note:\n"
+		"  - ECDSA keys are supported if ssh-honeypotd is compiled against libssh 0.6.4+\n"
+		"  - ED25519 keys are supported if ssh-honeypotd is compiled against libssh 0.7.0+\n\n"
+		"ssh-honeypotd was compiled against libssh " SSH_STRINGIFY(LIBSSH_VERSION) "\n"
+		"libssh used: %s\n\n"
+		"Please report bugs here: <https://github.com/sjinks/ssh-honeypotd/issues>\n",
+		ssh_version(0)
 	);
 
 	exit(0);
@@ -65,7 +71,7 @@ __attribute__((noreturn))
 static void version(struct globals_t* g)
 {
 	printf(
-		"ssh-honeypotd 1.0.0\n"
+		"ssh-honeypotd 1.0.1\n"
 		"Copyright (c) 2014-2018, Volodymyr Kolesnykov <volodymyr@wildwolf.name>\n"
 		"License: MIT <http://opensource.org/licenses/MIT>\n"
 	);

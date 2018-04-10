@@ -21,6 +21,21 @@ static void set_options(struct globals_t* g)
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BINDADDR, g->bind_address);
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BINDPORT_STR, g->bind_port);
 
+#if LIBSSH_VERSION_INT < SSH_VERSION_INT(0, 7, 0)
+	if (g->dsa_key) {
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_DSAKEY, g->dsa_key);
+	}
+
+	if (g->rsa_key) {
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_RSAKEY, g->rsa_key);
+	}
+
+#if defined(SSH_BIND_OPTIONS_ECDSAKEY)
+	if (g->ecdsa_key) {
+		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_ECDSAKEY, g->ecdsa_key);
+	}
+#endif
+#else
 	if (g->dsa_key) {
 		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->dsa_key);
 	}
@@ -36,6 +51,7 @@ static void set_options(struct globals_t* g)
 	if (g->ed25519_key) {
 		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->ed25519_key);
 	}
+#endif
 
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BANNER, "OpenSSH");
 }
