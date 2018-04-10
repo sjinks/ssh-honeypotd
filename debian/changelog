@@ -1,3 +1,9 @@
+ssh-honeypotd (1.0.1) xenial; urgency=low
+
+  * Bug fixes for libssh 0.6.x
+
+ -- Volodymyr Kolesnykov <volodymyr@wildwolf.name>  Sun, 10 Apr 2018 10:22:00 +0300
+
 ssh-honeypotd (1.0.0) xenial; urgency=low
 
   * Bug fixes
