@@ -103,7 +103,7 @@ void* worker(void* arg)
 		} while (!globals.terminate);
 	}
 	else {
-		printf("ssh_handle_key_exchange: %s\n", ssh_get_error(session));
+		syslog(LOG_WARNING, "Did not receive identification string from %s:%d (target: %s:%d)", ipstr, port, my_ipstr, my_port);
 	}
 
 	finalize_connection(conn);
