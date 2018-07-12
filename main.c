@@ -176,7 +176,7 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-	openlog(globals.daemon_name, LOG_PID, LOG_AUTH);
+	openlog(globals.daemon_name, LOG_PID | LOG_CONS | (globals.foreground ? LOG_PERROR : 0), LOG_AUTH);
 	daemonize(&globals);
 	if (write_pid(globals.pid_fd)) {
 		syslog(LOG_CRIT, "Failed to write to the PID file: %s", strerror(errno));
