@@ -2,8 +2,8 @@ Source: ssh-honeypotd
 Section: net
 Priority: optional
 Maintainer: Volodymyr Kolesnykov <volodymyr@wildwolf.name>
-Build-Depends: debhelper (>= 9.20160115), dh-systemd (>= 1.5), libssh-dev, dh-apparmor
-Standards-Version: 3.9.7
+Build-Depends: debhelper (>= 9.20160709), libssh-dev, dh-apparmor
+Standards-Version: 4.1.4
 Vcs-Git: https://github.com/sjinks/ssh-honeypotd.git
 
 Package: ssh-honeypotd
