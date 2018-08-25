@@ -5,7 +5,6 @@ After=network.target
 [Service]
 Type=forking
 PIDFile=/run/ssh-honeypotd/ssh-honeypotd.pid
-ExecStartPre=/bin/sh -c 'mkdir -p -m 0770 /run/ssh-honeypotd && chown root:sshhoneypotd /run/ssh-honeypotd'
 ExecStart=/usr/sbin/ssh-honeypotd -k /etc/ssh-honeypotd/ssh_host_rsa_key -k /etc/ssh-honeypotd/ssh_host_dsa_key -p 22 -b 0.0.0.0 -P /run/ssh-honeypotd/ssh-honeypotd.pid -u sshhoneypotd -g sshhoneypotd
 Restart=on-abort
 ProtectSystem=strict

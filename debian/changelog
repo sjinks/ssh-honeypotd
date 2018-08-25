@@ -1,3 +1,9 @@
+ssh-honeypotd (1.1.1) bionic; urgency=low
+
+  * Fix issue with permissions
+
+ -- Volodymyr Kolesnykov <volodymyr@wildwolf.name>  Sat, 25 Aug 2018 14:09:00 +0000
+
 ssh-honeypotd (1.1.0) bionic; urgency=low
 
   * 1.1.0
