@@ -12,7 +12,7 @@ endif
 ssh-honeypotd: $(OBJS)
 	$(CC) $^ -lssh -lssh_threads -pthread $(LDFLAGS) -o $@
 
-%o: %c
+%.o: %.c
 	$(CC) $(CPPFLAGS) -fvisibility=hidden -Wall -Werror $(CFLAGS) -c "$<" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@"
 
 clean: objclean depclean
