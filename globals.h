@@ -36,6 +36,7 @@ struct globals_t {
 
 	int pid_fd;
 	int foreground;
+	int no_syslog;
 	int uid_set;
 	int gid_set;
 	uid_t uid;

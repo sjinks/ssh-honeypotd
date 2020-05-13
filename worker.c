@@ -3,11 +3,11 @@
 #include <assert.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <syslog.h>
 #include <libssh/libssh.h>
 #include <libssh/server.h>
 #include "worker.h"
 #include "globals.h"
+#include "log.h"
 
 static void get_ip_port(const struct sockaddr_storage* addr, char* ipstr, int* port)
 {
@@ -78,7 +78,7 @@ void* worker(void* arg)
 				case SSH_REQUEST_AUTH:
 					switch (ssh_message_subtype(message)) {
 						case SSH_AUTH_METHOD_PASSWORD:
-							syslog(
+							my_log(
 								LOG_WARNING,
 								"Failed password for %s from %s port %d ssh%d (target: %s:%d, password: %s)",
 								ssh_message_auth_user(message), ipstr, port, version,
@@ -103,7 +103,7 @@ void* worker(void* arg)
 		} while (!globals.terminate);
 	}
 	else {
-		syslog(LOG_WARNING, "Did not receive identification string from %s:%d (target: %s:%d)", ipstr, port, my_ipstr, my_port);
+		my_log(LOG_WARNING, "Did not receive identification string from %s:%d (target: %s:%d)", ipstr, port, my_ipstr, my_port);
 	}
 
 	finalize_connection(conn);

@@ -26,6 +26,7 @@ static struct option long_options[] = {
 	{ "group",      required_argument, 0, 'g' },
 	{ "help",       no_argument,       0, 'h' },
 	{ "version",    no_argument,       0, 'v' },
+	{ "no-syslog",  no_argument,       0, 'x' },
 	{ "foreground", no_argument,       0, 'f' },
 	{ 0,            0,                 0, 0   }
 };
@@ -50,6 +51,8 @@ static void usage(struct globals_t* g)
 		"                        (default: daemon or nobody)\n"
 		"  -g, --group GROUP     drop privileges and switch to this GROUP\n"
 		"                        (default: daemon or nogroup)\n"
+        "  -x, --no-syslog       log messages only to stderr\n"
+        "                        (only works with --foreground)\n"
 		"  -f, --foreground      do not daemonize\n"
 		"  -h, --help            display this help and exit\n"
 		"  -v, --version         output version information and exit\n\n"
@@ -227,6 +230,10 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 				g->foreground = 1;
 				break;
 
+			case 'x':
+				g->no_syslog = 1;
+				break;
+
 			case 'u': {
 				struct passwd* pwd = getpwnam(optarg);
 				if (!pwd) {
@@ -283,5 +290,9 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 
 	if (!g->pid_file) {
 		g->foreground = 1;
+	}
+
+	if (!g->foreground) {
+		g->no_syslog = 0;
 	}
 }
