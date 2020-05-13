@@ -2,6 +2,7 @@ TARGET = ssh-honeypotd
 C_SRC  = main.c globals.c cmdline.c pidfile.c daemon.c worker.c
 C_DEPS = $(patsubst %.c,%.d,$(C_SRC))
 OBJS   = $(patsubst %.c,%.o,$(C_SRC))
+LIBFLAGS = -lssh -lssh_threads -pthread
 
 all: $(TARGET)
 
@@ -10,7 +11,7 @@ ifneq ($(strip $(C_DEPS)),)
 endif
 
 ssh-honeypotd: $(OBJS)
-	$(CC) $^ -lssh -lssh_threads -pthread $(LDFLAGS) -o $@
+	$(CC) $^ $(LIBFLAGS) $(LDFLAGS) -o $@
 
 %.o: %.c
 	$(CC) $(CPPFLAGS) -fvisibility=hidden -Wall -Werror $(CFLAGS) -c "$<" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@"
@@ -23,5 +24,14 @@ objclean:
 
 depclean:
 	-rm -f $(C_DEPS)
+
+keys:
+	mkdir -p keys
+	ssh-keygen -f keys/ssh_host_dsa_key -N '' -t dsa
+	ssh-keygen -f keys/ssh_host_rsa_key -N '' -t rsa
+	ssh-keygen -f keys/ssh_host_ecdsa_key -N '' -t ecdsa
+	ssh-keygen -f keys/ssh_host_ed25519_key -N '' -t ed25519
+
+docker-build: $(TARGET) keys
 
 .PHONY: clean
