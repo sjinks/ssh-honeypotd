@@ -162,7 +162,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 
 	while (1) {
 		int option_index = 0;
-		int c = getopt_long(argc, argv, "r:d:e:k:b:p:P:n:u:g:vfh", long_options, &option_index);
+		int c = getopt_long(argc, argv, "r:d:e:k:b:p:P:n:u:g:vfxh", long_options, &option_index);
 		if (-1 == c) {
 			break;
 		}
@@ -185,15 +185,21 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 				switch (key_type) {
 					case SSH_KEYTYPE_DSS:     loc = &g->dsa_key;     break;
 					case SSH_KEYTYPE_RSA:     loc = &g->rsa_key;     break;
-					case SSH_KEYTYPE_RSA1:    loc = &g->rsa_key;     break;
-#ifdef SSH_KEYTYPE_ECDSA
-					case SSH_KEYTYPE_ECDSA:   loc = &g->ecdsa_key;   break;
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
+					case SSH_KEYTYPE_ECDSA:
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 9, 0)
+					case SSH_KEYTYPE_ECDSA_P256:
+					case SSH_KEYTYPE_ECDSA_P384:
+					case SSH_KEYTYPE_ECDSA_P521:
 #endif
-#ifdef SSH_KEYTYPE_ED25519
+						loc = &g->ecdsa_key;
+						break;
+#endif
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 7, 0)
 					case SSH_KEYTYPE_ED25519: loc = &g->ed25519_key; break;
 #endif
 					default:
-						fprintf(stderr, "WARNING: unsupported key type in %s\n", optarg);
+						fprintf(stderr, "WARNING: unsupported key type in %s (%d)\n", optarg, key_type);
 						loc = NULL;
 						break;
 				}
