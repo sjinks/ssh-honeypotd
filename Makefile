@@ -14,7 +14,7 @@ ssh-honeypotd: $(OBJS)
 	$(CC) $^ $(LIBFLAGS) $(LDFLAGS) -o $@
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -fvisibility=hidden -Wall -Werror $(CFLAGS) -c "$<" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@"
+	$(CC) $(CPPFLAGS) -fvisibility=hidden -Wall -Werror -Werror=attributes $(CFLAGS) -c "$<" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@"
 
 clean: objclean depclean
 	-rm -f $(TARGET)
