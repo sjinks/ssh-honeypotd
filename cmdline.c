@@ -43,7 +43,7 @@ static void usage(struct globals_t* g)
 		"  -b, --address ADDRESS the IP address to bind to (default: 0.0.0.0)\n"
 		"  -p, --port PORT       the port to bind to (default: 22)\n"
 		"  -P, --pid FILE        the PID file\n"
-		"                        (default: /run/ssh-honeypotd/ssh-honeypotd.pid)\n"
+		"                        (if not specified, the daemon will run in foreground mode)\n"
 		"  -n, --name NAME       the name of the daemon for syslog\n"
 		"                        (default: ssh-honeypotd)\n"
 		"  -u, --user USER       drop privileges and switch to this USER\n"
