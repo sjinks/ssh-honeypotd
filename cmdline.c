@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <getopt.h>
 #include <unistd.h>
 #include <pwd.h>
@@ -72,11 +73,84 @@ static void version(struct globals_t* g)
 {
 	printf(
 		"ssh-honeypotd 1.0.1\n"
-		"Copyright (c) 2014-2018, Volodymyr Kolesnykov <volodymyr@wildwolf.name>\n"
+		"Copyright (c) 2014-2020, Volodymyr Kolesnykov <volodymyr@wildwolf.name>\n"
 		"License: MIT <http://opensource.org/licenses/MIT>\n"
 	);
 
 	exit(0);
+}
+
+static void check_alloc(void* p, const char* api)
+{
+	if (!p) {
+		perror(api);
+		exit(EXIT_FAILURE);
+	}
+}
+
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((malloc, returns_nonnull))
+#endif
+static char* my_strdup(const char *s)
+{
+	char* retval = strdup(s);
+	check_alloc(retval, "strdup");
+	return retval;
+}
+
+static void resolve_pid_file(struct globals_t* g)
+{
+	if (g->pid_file) {
+		if (g->pid_file[0] != '/') {
+			char buf[PATH_MAX+1];
+			char* cwd    = getcwd(buf, PATH_MAX + 1);
+			char* newbuf = NULL;
+
+			/* If the current directory is not below the root directory of
+			* the current process (e.g., because the process set a new
+			* filesystem root using chroot(2) without changing its current
+			* directory into the new root), then, since Linux 2.6.36,
+			* the returned path will be prefixed with the string
+			* "(unreachable)". Such behavior can also be caused by
+			* an unprivileged user by changing the current directory into
+			* another mount namespace. When dealing with paths from
+			* untrusted sources, callers of these functions should consider
+			* checking whether the returned path starts with '/' or '('
+			* to avoid misinterpreting an unreachable path as a relative path.
+			*/
+			if (cwd && cwd[0] == '/') {
+				size_t cwd_len = strlen(cwd);
+				size_t pid_len = strlen(g->pid_file);
+				newbuf         = calloc(cwd_len + pid_len + 2, 1);
+				check_alloc(newbuf, "calloc");
+				memcpy(newbuf, cwd, cwd_len);
+				newbuf[cwd_len] = '/';
+				memcpy(newbuf + cwd_len + 1, g->pid_file, pid_len);
+				free(g->pid_file);
+				g->pid_file = newbuf;
+			}
+			else {
+				fprintf(stderr, "ERROR: Failed to get the current directory: %s\n", strerror(errno));
+				free(g->pid_file);
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+}
+
+static void set_defaults(struct globals_t* g)
+{
+	if (!g->bind_address) {
+		g->bind_address = my_strdup("0.0.0.0");
+	}
+
+	if (!g->bind_port) {
+		g->bind_port = my_strdup("22");
+	}
+
+	if (!g->daemon_name) {
+		g->daemon_name = my_strdup("ssh-honeypotd");
+	}
 }
 
 void parse_options(int argc, char** argv, struct globals_t* g)
@@ -103,6 +177,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 				}
 
 				int key_type = ssh_key_type(key);
+				ssh_key_free(key);
 				char** loc   = NULL;
 				switch (key_type) {
 					case SSH_KEYTYPE_DSS:     loc = &g->dsa_key;     break;
@@ -121,11 +196,8 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 				}
 
 				if (loc) {
-					if (*loc) {
-						free(*loc);
-					}
-
-					*loc = strdup(optarg);
+					free(*loc);
+					*loc = my_strdup(optarg);
 				}
 
 				break;
@@ -206,42 +278,10 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 		++optind;
 	}
 
-	if (!g->bind_address) {
-		g->bind_address = strdup("0.0.0.0");
-	}
-
-	if (!g->bind_port) {
-		g->bind_port = strdup("22");
-	}
-
-	if (!g->daemon_name) {
-		g->daemon_name = strdup("ssh-honeypotd");
-	}
+	set_defaults(g);
+	resolve_pid_file(g);
 
 	if (!g->pid_file) {
-		g->pid_file = strdup("/run/ssh-honeypotd/ssh-honeypotd.pid");
-	}
-	else if (g->pid_file[0] != '/') {
-		char buf[PATH_MAX+1];
-		char* cwd    = getcwd(buf, PATH_MAX + 1);
-		char* newbuf = NULL;
-
-		if (cwd) {
-			size_t cwd_len = strlen(cwd);
-			size_t pid_len = strlen(g->pid_file);
-			newbuf         = calloc(cwd_len + pid_len + 2, 1);
-			if (newbuf) {
-				memcpy(newbuf, cwd, cwd_len);
-				newbuf[cwd_len] = '/';
-				memcpy(newbuf + cwd_len + 1, g->pid_file, pid_len);
-			}
-		}
-
-		free(g->pid_file);
-		g->pid_file = newbuf;
-	}
-
-	if (!g->bind_address || !g->bind_port || !g->daemon_name || !g->pid_file) {
-		exit(1);
+		g->foreground = 1;
 	}
 }

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stddef.h>
 #include <signal.h>
 #include <unistd.h>
@@ -8,6 +9,7 @@
 
 static void signal_handler(int signal)
 {
+	fprintf(stderr, "Got signal %d\n", signal);
 	globals.terminate = 1;
 }
 
