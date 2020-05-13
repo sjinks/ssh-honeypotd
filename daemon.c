@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stddef.h>
 #include <signal.h>
 #include <unistd.h>
@@ -6,10 +5,11 @@
 #include <grp.h>
 #include "daemon.h"
 #include "globals.h"
+#include "log.h"
 
 static void signal_handler(int signal)
 {
-	fprintf(stderr, "Got signal %d\n", signal);
+	my_log(LOG_DAEMON | LOG_INFO, "Got signal %d, shutting down", signal);
 	globals.terminate = 1;
 }
 

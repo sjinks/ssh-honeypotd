@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
-#include <syslog.h>
 #include <errno.h>
 #include <libssh/server.h>
 #include "globals.h"
+#include "log.h"
 #include "daemon.h"
 #include "cmdline.h"
 #include "worker.h"
@@ -106,7 +106,7 @@ static void spawn_thread(struct globals_t* g, pthread_attr_t* attr, ssh_session 
 	size_t num_threads;
 	struct connection_info_t* conn = malloc(sizeof(struct connection_info_t));
 	if (!conn) {
-		syslog(LOG_ALERT, "malloc() failed, out of memory");
+		my_log(LOG_ALERT, "malloc() failed, out of memory");
 		ssh_disconnect(session);
 		ssh_free(session);
 		return;
@@ -128,11 +128,11 @@ static void spawn_thread(struct globals_t* g, pthread_attr_t* attr, ssh_session 
 	pthread_mutex_unlock(&g->mutex);
 
 	if (num_threads > MAX_THREADS) {
-		syslog(LOG_ERR, "Too many connections");
+		my_log(LOG_ERR, "Too many connections");
 		finalize_connection(conn);
 	}
 	else if (pthread_create(&conn->thread, attr, worker, conn) != 0) {
-		syslog(LOG_CRIT, "pthread_create() failed");
+		my_log(LOG_CRIT, "pthread_create() failed");
 		finalize_connection(conn);
 	}
 }
@@ -149,12 +149,12 @@ static void main_loop(struct globals_t* g)
 		ssh_options_set(session, SSH_OPTIONS_TIMEOUT, &timeout);
 		int r = ssh_bind_accept(g->sshbind, session);
 		if (r == SSH_ERROR) {
+			ssh_free(session);
 			if (g->terminate) {
-				ssh_free(session);
 				break;
 			}
 
-			syslog(LOG_WARNING, "Error accepting a connection: %s\n", ssh_get_error(g->sshbind));
+			my_log(LOG_WARNING, "Error accepting a connection: %s\n", ssh_get_error(g->sshbind));
 			continue;
 		}
 
@@ -182,10 +182,13 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-	openlog(globals.daemon_name, LOG_PID | LOG_CONS | (globals.foreground ? LOG_PERROR : 0), LOG_AUTH);
+	if (!globals.no_syslog) {
+		openlog(globals.daemon_name, LOG_PID | LOG_CONS | (globals.foreground ? LOG_PERROR : 0), LOG_AUTH);
+	}
+
 	daemonize(&globals);
 	if (globals.pid_file && write_pid(globals.pid_fd)) {
-		syslog(LOG_CRIT, "Failed to write to the PID file: %s", strerror(errno));
+		my_log(LOG_CRIT, "Failed to write to the PID file: %s", strerror(errno));
 		return EXIT_FAILURE;
 	}
 
