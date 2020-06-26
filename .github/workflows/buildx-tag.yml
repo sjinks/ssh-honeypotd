@@ -2,7 +2,7 @@ name: Buildx (push tag)
 
 on:
   push:
-    tags:
+    tags: [ '*' ]
 
 jobs:
   buildx:
