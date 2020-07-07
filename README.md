@@ -3,3 +3,14 @@
 ![Build](https://github.com/sjinks/ssh-honeypotd/workflows/Build/badge.svg)
 
 A low-interaction SSH honeypot written in C
+
+## Usage with Docker
+
+```bash
+docker run -it -d \
+    --network=host \
+    --cap-add=NET_ADMIN \
+    --restart=always \
+    --name=ssh-honeypotd \
+    wildwildangel/ssh-honeypotd:latest
+```
