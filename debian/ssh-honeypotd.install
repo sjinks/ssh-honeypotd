@@ -1,3 +1,0 @@
-ssh-honeypotd usr/sbin
-ssh_host*.dist etc/ssh-honeypotd
-debian/usr.sbin.ssh-honeypotd etc/apparmor.d
