@@ -13,5 +13,7 @@ RUN make docker-build LIBFLAGS="-lssh -pthread"
 FROM deps
 COPY --from=build /src/ssh-honeypotd/ssh-honeypotd /usr/bin/ssh-honeypotd
 COPY --from=build /src/ssh-honeypotd/keys/ /etc/ssh-honeypotd/
+COPY entrypoint.sh /entrypoint.sh
 EXPOSE 22
-CMD ["/usr/bin/ssh-honeypotd", "-k", "/etc/ssh-honeypotd/ssh_host_dsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_rsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ecdsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ed25519_key", "-f", "-x"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["-k", "/etc/ssh-honeypotd/ssh_host_dsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_rsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ecdsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ed25519_key", "-f", "-x"]
