@@ -7,10 +7,11 @@ A low-interaction SSH honeypot written in C
 ## Usage with Docker
 
 ```bash
-docker run -it -d \
+docker run -d \
     --network=host \
     --cap-add=NET_ADMIN \
     --restart=always \
+    --read-only \
     --name=ssh-honeypotd \
     wildwildangel/ssh-honeypotd:latest
 ```
