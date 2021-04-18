@@ -8,7 +8,7 @@ FROM builddeps as build
 WORKDIR /src/ssh-honeypotd
 COPY . .
 ENV CFLAGS="-Os -g0"
-RUN make docker-build LIBFLAGS="-lssh -pthread"
+RUN make docker-build
 
 FROM deps
 COPY --from=build /src/ssh-honeypotd/ssh-honeypotd /usr/bin/ssh-honeypotd

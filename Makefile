@@ -2,7 +2,7 @@ TARGET = ssh-honeypotd
 C_SRC  = main.c globals.c cmdline.c pidfile.c daemon.c worker.c log.c
 C_DEPS = $(patsubst %.c,%.d,$(C_SRC))
 OBJS   = $(patsubst %.c,%.o,$(C_SRC))
-LIBFLAGS = -lssh -lssh_threads -pthread
+LIBFLAGS = -lssh -pthread
 
 all: $(TARGET)
 
