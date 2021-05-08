@@ -21,8 +21,10 @@ struct globals_t {
 	char* ed25519_key;
 	char* bind_address;
 	char* bind_port;
+#ifndef MINIMALISTIC_BUILD
 	char* pid_file;
 	char* daemon_name;
+#endif
 
 	ssh_bind sshbind;
 
@@ -34,6 +36,7 @@ struct globals_t {
 	volatile size_t n_threads;
 	volatile sig_atomic_t terminate;
 
+#ifndef MINIMALISTIC_BUILD
 	int pid_fd;
 	int foreground;
 	int no_syslog;
@@ -41,6 +44,7 @@ struct globals_t {
 	int gid_set;
 	uid_t uid;
 	gid_t gid;
+#endif
 };
 
 extern struct globals_t globals;

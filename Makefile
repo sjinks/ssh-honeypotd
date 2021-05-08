@@ -1,8 +1,8 @@
-TARGET = ssh-honeypotd
-C_SRC  = main.c globals.c cmdline.c pidfile.c daemon.c worker.c log.c
-C_DEPS = $(patsubst %.c,%.d,$(C_SRC))
-OBJS   = $(patsubst %.c,%.o,$(C_SRC))
-LIBFLAGS = -lssh -pthread
+TARGET   = ssh-honeypotd
+C_SRC    = main.c globals.c cmdline.c pidfile.c daemon.c worker.c log.c
+C_DEPS   = $(patsubst %.c,%.dep,$(C_SRC))
+OBJS     = $(patsubst %.c,%.o,$(C_SRC))
+LIBFLAGS = $(shell pkg-config --libs libssh) $(shell pkg-config --libs --silence-errors libssh_threads) -pthread
 
 all: $(TARGET)
 
@@ -14,7 +14,7 @@ ssh-honeypotd: $(OBJS)
 	$(CC) $^ $(LIBFLAGS) $(LDFLAGS) -o $@
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -fvisibility=hidden -Wall -Werror -Wno-error=attributes $(CFLAGS) -c "$<" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@"
+	$(CC) $(CPPFLAGS) -fvisibility=hidden -Wall -Werror -Wno-error=attributes $(CFLAGS) -c "$<" -MMD -MP -MF"$(@:%.o=%.dep)" -MT"$(@:%.o=%.dep)" -o "$@"
 
 clean: objclean depclean
 	-rm -f $(TARGET)

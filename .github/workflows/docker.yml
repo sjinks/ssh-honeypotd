@@ -16,8 +16,16 @@ on:
 jobs:
   docker:
     name: Build Docker image
-    if: "!contains(github.event.head_commit.message, '[ci skip]')"
+    if: ${{ !contains(github.event.head_commit.message, '[ci skip]') || github.event_name != 'push' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        flavor:
+          - target: release-dynamic
+            image: wildwildangel/ssh-honeypotd
+          - target: release-static
+            image: wildwildangel/ssh-honeypotd-min
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -28,7 +36,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=wildwildangel/ssh-honeypotd
+          DOCKER_IMAGE=${{ matrix.flavor.image }}
           VERSION=noop
           if [ "${{ github.event_name }}" = "schedule" ]; then
             VERSION=nightly
@@ -79,9 +87,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
           context: .
           file: ./Dockerfile
+          target: ${{ matrix.flavor.target }}
           labels: |
             org.opencontainers.image.title=${{ github.event.repository.name }}
             org.opencontainers.image.description=${{ github.event.repository.description }}
@@ -91,3 +100,8 @@ jobs:
             org.opencontainers.image.created=${{ steps.prep.outputs.created }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.licenses=${{ github.event.repository.license.spdx_id }}
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache

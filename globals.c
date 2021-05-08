@@ -18,7 +18,9 @@ void init_globals(struct globals_t* g)
 	}
 
 	g->sshbind = ssh_bind_new();
+#ifndef MINIMALISTIC_BUILD
 	g->pid_fd  = -1;
+#endif
 }
 
 static void wait_for_threads(struct globals_t* g)
@@ -45,6 +47,7 @@ static void wait_for_threads(struct globals_t* g)
 
 void free_globals(struct globals_t* g)
 {
+#ifndef MINIMALISTIC_BUILD
 	if (g->pid_fd >= 0) {
 		if (-1 == unlink(g->pid_file)) {
 			my_log(LOG_DAEMON | LOG_WARNING, "WARNING: Failed to delete the PID file %s: %s", g->pid_file, strerror(errno));
@@ -55,22 +58,24 @@ void free_globals(struct globals_t* g)
 		}
 	}
 
+	free(g->pid_file);
+	free(g->daemon_name);
+
+	if (!g->no_syslog) {
+		closelog();
+	}
+#endif
+
 	free(g->rsa_key);
 	free(g->dsa_key);
 	free(g->ecdsa_key);
 	free(g->ed25519_key);
 	free(g->bind_address);
 	free(g->bind_port);
-	free(g->pid_file);
-	free(g->daemon_name);
 
 	wait_for_threads(g);
 	pthread_mutex_destroy(&g->mutex);
 
 	ssh_bind_free(g->sshbind);
 	ssh_finalize();
-
-	if (!g->no_syslog) {
-		closelog();
-	}
 }

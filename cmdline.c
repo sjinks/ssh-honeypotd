@@ -20,14 +20,16 @@ static struct option long_options[] = {
 	{ "host-key",   required_argument, 0, 'k' },
 	{ "address",    required_argument, 0, 'b' },
 	{ "port",       required_argument, 0, 'p' },
+#ifndef MINIMALISTIC_BUILD
 	{ "pid",        required_argument, 0, 'P' },
 	{ "name",       required_argument, 0, 'n' },
 	{ "user",       required_argument, 0, 'u' },
 	{ "group",      required_argument, 0, 'g' },
-	{ "help",       no_argument,       0, 'h' },
-	{ "version",    no_argument,       0, 'v' },
 	{ "no-syslog",  no_argument,       0, 'x' },
 	{ "foreground", no_argument,       0, 'f' },
+#endif
+	{ "help",       no_argument,       0, 'h' },
+	{ "version",    no_argument,       0, 'v' },
 	{ 0,            0,                 0, 0   }
 };
 
@@ -43,6 +45,7 @@ static void usage(struct globals_t* g)
 		"  -k, --host-key FILE   the file containing the private host key (RSA, DSA, ECDSA, ED25519)\n"
 		"  -b, --address ADDRESS the IP address to bind to (default: 0.0.0.0)\n"
 		"  -p, --port PORT       the port to bind to (default: 22)\n"
+#ifndef MINIMALISTIC_BUILD
 		"  -P, --pid FILE        the PID file\n"
 		"                        (if not specified, the daemon will run in the foreground)\n"
 		"  -n, --name NAME       the name of the daemon for syslog\n"
@@ -54,6 +57,7 @@ static void usage(struct globals_t* g)
 		"  -x, --no-syslog       log messages only to stderr\n"
 		"                        (only works with --foreground)\n"
 		"  -f, --foreground      do not daemonize\n"
+#endif
 		"  -h, --help            display this help and exit\n"
 		"  -v, --version         output version information and exit\n\n"
 		"-k option must be specified at least once.\n\n"
@@ -75,8 +79,8 @@ __attribute__((noreturn))
 static void version(struct globals_t* g)
 {
 	printf(
-		"ssh-honeypotd 2.0.0\n"
-		"Copyright (c) 2014-2020, Volodymyr Kolesnykov <volodymyr@wildwolf.name>\n"
+		"ssh-honeypotd 2.1.0\n"
+		"Copyright (c) 2014-2021, Volodymyr Kolesnykov <volodymyr@wildwolf.name>\n"
 		"License: MIT <http://opensource.org/licenses/MIT>\n"
 	);
 
@@ -103,6 +107,7 @@ static char* my_strdup(const char *s)
 
 static void resolve_pid_file(struct globals_t* g)
 {
+#ifndef MINIMALISTIC_BUILD
 	if (g->pid_file) {
 		if (g->pid_file[0] != '/') {
 			char buf[PATH_MAX+1];
@@ -139,6 +144,7 @@ static void resolve_pid_file(struct globals_t* g)
 			}
 		}
 	}
+#endif
 }
 
 static void set_defaults(struct globals_t* g)
@@ -151,9 +157,11 @@ static void set_defaults(struct globals_t* g)
 		g->bind_port = my_strdup("22");
 	}
 
+#ifndef MINIMALISTIC_BUILD
 	if (!g->daemon_name) {
 		g->daemon_name = my_strdup("ssh-honeypotd");
 	}
+#endif
 }
 
 void parse_options(int argc, char** argv, struct globals_t* g)
@@ -162,7 +170,18 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 
 	while (1) {
 		int option_index = 0;
-		int c = getopt_long(argc, argv, "r:d:e:k:b:p:P:n:u:g:vfxh", long_options, &option_index);
+		int c = getopt_long(
+			argc,
+			argv,
+#ifndef MINIMALISTIC_BUILD
+			"r:d:e:k:b:p:P:n:u:g:xfvh",
+#else
+			"r:d:e:k:b:p:vh",
+#endif
+			long_options,
+			&option_index
+		);
+
 		if (-1 == c) {
 			break;
 		}
@@ -222,6 +241,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 				g->bind_port = strdup(optarg);
 				break;
 
+#ifndef MINIMALISTIC_BUILD
 			case 'P':
 				free(g->pid_file);
 				g->pid_file = strdup(optarg);
@@ -269,6 +289,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 
 				break;
 			}
+#endif
 
 			case 'h':
 				usage(g);
@@ -294,6 +315,7 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 	set_defaults(g);
 	resolve_pid_file(g);
 
+#ifndef MINIMALISTIC_BUILD
 	if (!g->pid_file) {
 		g->foreground = 1;
 	}
@@ -301,4 +323,5 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 	if (!g->foreground) {
 		g->no_syslog = 0;
 	}
+#endif
 }
