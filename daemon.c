@@ -27,6 +27,7 @@ void set_signals(void)
 	sigaction(SIGHUP, &sa, NULL);
 }
 
+#ifndef MINIMALISTIC_BUILD
 static int find_account(uid_t* uid, gid_t* gid)
 {
 	struct passwd* pwd;
@@ -44,9 +45,11 @@ static int find_account(uid_t* uid, gid_t* gid)
 
 	return -1;
 }
+#endif
 
 int drop_privs(struct globals_t* g)
 {
+#ifndef MINIMALISTIC_BUILD
 	if (0 == geteuid()) {
 		if (!g->uid_set || !g->gid_set) {
 			uid_t uid;
@@ -75,6 +78,7 @@ int drop_privs(struct globals_t* g)
 			return DP_GENERAL_FAILURE;
 		}
 	}
+#endif
 
 	return 0;
 }

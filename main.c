@@ -16,6 +16,7 @@
 
 struct globals_t globals;
 
+#ifndef MINIMALISTIC_BUILD
 static void check_pid_file(struct globals_t* g)
 {
 	if (g->pid_file) {
@@ -31,6 +32,36 @@ static void check_pid_file(struct globals_t* g)
 		}
 	}
 }
+
+static void daemonize(struct globals_t* g)
+{
+	int res;
+
+	set_signals();
+	res = drop_privs(g);
+	if (res != 0) {
+		switch (res) {
+			case DP_NO_UNPRIV_ACCOUNT:
+				fprintf(stderr, "ERROR: Failed to find an unprivileged account\n");
+				break;
+
+			case DP_GENERAL_FAILURE:
+			default:
+				fprintf(stderr, "ERROR: Failed to drop privileges\n");
+				break;
+		}
+
+		exit(EXIT_FAILURE);
+	}
+
+	if (!g->foreground) {
+		if (daemon(0, 0)) {
+			perror("daemon");
+			exit(EXIT_FAILURE);
+		}
+	}
+}
+#endif
 
 static void set_options(struct globals_t* g)
 {
@@ -70,35 +101,6 @@ static void set_options(struct globals_t* g)
 #endif
 
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BANNER, "OpenSSH");
-}
-
-static void daemonize(struct globals_t* g)
-{
-	int res;
-
-	set_signals();
-	res = drop_privs(g);
-	if (res != 0) {
-		switch (res) {
-			case DP_NO_UNPRIV_ACCOUNT:
-				fprintf(stderr, "ERROR: Failed to find an unprivileged account\n");
-				break;
-
-			case DP_GENERAL_FAILURE:
-			default:
-				fprintf(stderr, "ERROR: Failed to drop privileges\n");
-				break;
-		}
-
-		exit(EXIT_FAILURE);
-	}
-
-	if (!g->foreground) {
-		if (daemon(0, 0)) {
-			perror("daemon");
-			exit(EXIT_FAILURE);
-		}
-	}
 }
 
 static void spawn_thread(struct globals_t* g, pthread_attr_t* attr, ssh_session session)
@@ -174,7 +176,9 @@ int main(int argc, char** argv)
 	init_globals(&globals);
 	atexit(goodbye);
 	parse_options(argc, argv, &globals);
+#ifndef MINIMALISTIC_BUILD
 	check_pid_file(&globals);
+#endif
 	set_options(&globals);
 
 	if (ssh_bind_listen(globals.sshbind) < 0) {
@@ -182,6 +186,7 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
+#ifndef MINIMALISTIC_BUILD
 	if (!globals.no_syslog) {
 		openlog(globals.daemon_name, LOG_PID | LOG_CONS | (globals.foreground ? LOG_PERROR : 0), LOG_AUTH);
 	}
@@ -191,6 +196,9 @@ int main(int argc, char** argv)
 		my_log(LOG_CRIT, "Failed to write to the PID file: %s", strerror(errno));
 		return EXIT_FAILURE;
 	}
+#else
+	set_signals();
+#endif
 
 	main_loop(&globals);
 	return 0;
