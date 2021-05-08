@@ -49,4 +49,5 @@ FROM scratch AS release-static
 COPY --from=build-static /src/ssh-honeypotd/ssh-honeypotd /ssh-honeypotd
 COPY --from=build-static /src/ssh-honeypotd/keys/ /
 EXPOSE 22
-CMD [ "/ssh-honeypotd", "-k", "/ssh_host_dsa_key", "-k", "/ssh_host_rsa_key", "-k", "/ssh_host_ecdsa_key", "-k", "/ssh_host_ed25519_key", "-f", "-x"]
+ENTRYPOINT [ "/ssh-honeypotd" ]
+CMD [ "-k", "/ssh_host_dsa_key", "-k", "/ssh_host_rsa_key", "-k", "/ssh_host_ecdsa_key", "-k", "/ssh_host_ed25519_key" ]
