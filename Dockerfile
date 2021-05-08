@@ -34,12 +34,15 @@ RUN \
         -DWITH_PCAP=OFF \
         -DBUILD_SHARED_LIBS=OFF \
         -DWITH_EXAMPLES=OFF \
+        -DCMAKE_AR=/usr/bin/gcc-ar \
+        -DCMAKE_RANLIB=/usr/bin/gcc-ranlib \
+        -DCMAKE_C_FLAGS="-flto -fuse-linker-plugin -ffat-lto-objects" \
         .. \
     && \
     make && make install
 WORKDIR /src/ssh-honeypotd
 COPY . .
-RUN make docker-build LDFLAGS="-static" LIBFLAGS="$(pkg-config --libs --static libssh openssl zlib)" CFLAGS="-Os -g0" CPPFLAGS="-DMINIMALISTIC_BUILD -DLIBSSH_STATIC=1"
+RUN make docker-build LDFLAGS="-static -flto -fuse-linker-plugin -ffat-lto-objects" LIBFLAGS="$(pkg-config --libs --static libssh openssl zlib)" CFLAGS="-Os -flto -fuse-linker-plugin -ffat-lto-objects" CPPFLAGS="-DMINIMALISTIC_BUILD -DLIBSSH_STATIC=1"
 RUN strip ssh-honeypotd
 
 FROM scratch AS release-static
