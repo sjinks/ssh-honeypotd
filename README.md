@@ -22,11 +22,11 @@ Mandatory arguments to long options are mandatory for short options too.
   * `-h`, `--help`: display help and exit
   * `-v`, `--version`: output version information and exit
 
-`-k` option must be specified at least once.
+`-k` option must be specified at least once if ssh-honeypots is compiled against libssh prior to 0.8.0 (note that in Ubuntu (and possibly Debian), libssh 0.8.0 is detected as 0.7.0 because of a bug in `libssh.h`). For newer libssh versions, the host key is generated automatically (RSA 2048 bits).
 
 Please note:
-  * ECDSA keys are supported if ssh-honeypotd is compiled against libssh 0.6.4+
-  * ED25519 keys are supported if ssh-honeypotd is compiled against libssh 0.7.0+
+  * ECDSA keys are supported if ssh-honeypotd is compiled against and run with libssh 0.6.4+
+  * ED25519 keys are supported if ssh-honeypotd is compiled against and run with libssh 0.7.0+
 
 ## Usage with Docker
 
@@ -81,10 +81,10 @@ spec:
           image: wildwildangel/ssh-honeypotd-min
           resources:
             limits:
-              memory: 16Mi
+              memory: 12Mi
             requests:
               cpu: 100m
-              memory: 16Mi
+              memory: 12Mi
           securityContext:
             capabilities:
               add:

@@ -101,6 +101,20 @@ static void set_options(struct globals_t* g)
 #endif
 
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BANNER, "OpenSSH");
+
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 7, 90)
+	if (!g->rsa_key && !g->dsa_key && !g->ecdsa_key && !g->ed25519_key) {
+		ssh_key key;
+		int res = ssh_pki_generate(SSH_KEYTYPE_RSA, 2048, &key);
+		if (res == SSH_OK) {
+			ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_IMPORT_KEY, key);
+		}
+		else {
+			fprintf(stderr, "FATAL: failed to generate a new server key, and no -k option was specified\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+#endif
 }
 
 static void spawn_thread(struct globals_t* g, pthread_attr_t* attr, ssh_session session)
