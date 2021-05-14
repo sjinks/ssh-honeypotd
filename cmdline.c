@@ -81,7 +81,7 @@ __attribute__((noreturn))
 static void version(struct globals_t* g)
 {
 	printf(
-		"ssh-honeypotd 2.1.0\n"
+		"ssh-honeypotd 2.1.2\n"
 		"Copyright (c) 2014-2021, Volodymyr Kolesnykov <volodymyr@wildwolf.name>\n"
 		"License: MIT <http://opensource.org/licenses/MIT>\n"
 	);
