@@ -200,12 +200,18 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 					break;
 				}
 
-				int key_type = ssh_key_type(key);
+				enum ssh_keytypes_e key_type = ssh_key_type(key);
 				ssh_key_free(key);
 				char** loc   = NULL;
-				switch (key_type) {
-					case SSH_KEYTYPE_DSS:     loc = &g->dsa_key;     break;
-					case SSH_KEYTYPE_RSA:     loc = &g->rsa_key;     break;
+				switch ((int)key_type) {
+					case SSH_KEYTYPE_DSS:
+						loc = &g->dsa_key;
+						break;
+
+					case SSH_KEYTYPE_RSA:
+						loc = &g->rsa_key;
+						break;
+
 #if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 					case SSH_KEYTYPE_ECDSA:
 #if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 9, 0)
@@ -216,11 +222,15 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 						loc = &g->ecdsa_key;
 						break;
 #endif
+
 #if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 7, 0)
-					case SSH_KEYTYPE_ED25519: loc = &g->ed25519_key; break;
+					case SSH_KEYTYPE_ED25519:
+						loc = &g->ed25519_key;
+						break;
 #endif
+
 					default:
-						fprintf(stderr, "WARNING: unsupported key type in %s (%d)\n", optarg, key_type);
+						fprintf(stderr, "WARNING: unsupported key type in %s (%d)\n", optarg, (int)key_type);
 						loc = NULL;
 						break;
 				}

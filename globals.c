@@ -26,19 +26,19 @@ void init_globals(struct globals_t* g)
 static void wait_for_threads(struct globals_t* g)
 {
 	size_t num_threads;
-	pthread_t thread;
 
 	do {
+		pthread_t thread = 0;
 		pthread_mutex_lock(&g->mutex);
 		{
 			num_threads = g->n_threads;
-			if (num_threads) {
+			if (num_threads > 0) {
 				thread = g->head->thread;
 			}
 		}
 		pthread_mutex_unlock(&g->mutex);
 
-		if (num_threads) {
+		if (num_threads > 0) {
 			pthread_kill(thread, SIGTERM);
 			pthread_join(thread, NULL);
 		}

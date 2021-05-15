@@ -84,7 +84,7 @@ void* worker(void* arg)
 								ssh_message_auth_user(message), ipstr, port, version,
 								my_ipstr, my_port, ssh_message_auth_password(message)
 							);
-							/* no break */
+							/* fall through */
 
 						default:
 							ssh_message_auth_set_methods(message, SSH_AUTH_METHOD_PASSWORD);

@@ -15,6 +15,8 @@ static void signal_handler(int signal)
 
 void set_signals(void)
 {
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 	struct sigaction sa;
 	sa.sa_handler = signal_handler;
 	sigemptyset(&sa.sa_mask);
@@ -25,6 +27,7 @@ void set_signals(void)
 
 	sa.sa_handler = SIG_IGN;
 	sigaction(SIGHUP, &sa, NULL);
+	#pragma clang diagnostic pop
 }
 
 #ifndef MINIMALISTIC_BUILD

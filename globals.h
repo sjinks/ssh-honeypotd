@@ -14,6 +14,8 @@ struct connection_info_t {
 	pthread_t thread;
 };
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpadded"
 struct globals_t {
 	char* rsa_key;
 	char* dsa_key;
@@ -46,6 +48,7 @@ struct globals_t {
 	gid_t gid;
 #endif
 };
+#pragma clang diagnostic pop
 
 extern struct globals_t globals;
 
