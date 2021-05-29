@@ -44,12 +44,11 @@ WORKDIR /src/ssh-honeypotd
 COPY . .
 RUN make docker-build LDFLAGS="-static -flto -fuse-linker-plugin -ffat-lto-objects" LIBFLAGS="$(pkg-config --libs --static libssh openssl zlib)" CFLAGS="-Os -flto -fuse-linker-plugin -ffat-lto-objects" CPPFLAGS="-DMINIMALISTIC_BUILD -DLIBSSH_STATIC=1"
 RUN strip ssh-honeypotd
+RUN chmod 0444 /src/ssh-honeypotd/keys/*
 
 FROM scratch AS release-static
 COPY --from=build-static /src/ssh-honeypotd/ssh-honeypotd /ssh-honeypotd
 COPY --from=build-static /src/ssh-honeypotd/keys/ /
-COPY docker/passwd /etc/passwd
-COPY docker/group /etc/group
 EXPOSE 22
 ENTRYPOINT [ "/ssh-honeypotd" ]
 CMD [ "-k", "/ssh_host_dsa_key", "-k", "/ssh_host_rsa_key", "-k", "/ssh_host_ecdsa_key", "-k", "/ssh_host_ed25519_key" ]
