@@ -33,7 +33,7 @@ Please note:
 ```bash
 docker run -d \
     --network=host \
-    --cap-add=NET_ADMIN \
+    --cap-add=NET_BIND_SERVICE \
     --restart=always \
     --read-only \
     --name=ssh-honeypotd \
@@ -45,7 +45,7 @@ docker run -d \
 ```bash
 docker run -d \
     --network=host \
-    --cap-add=NET_ADMIN \
+    --cap-add=NET_BIND_SERVICE \
     --restart=always \
     --read-only \
     wildwildangel/ssh-honeypotd-min:latest
@@ -78,18 +78,24 @@ spec:
       hostNetwork: true
       containers:
         - name: ssh-honeypotd
-          image: wildwildangel/ssh-honeypotd-min
+          image: wildwildangel/ssh-honeypotd-min # or wildwildangel/ssh-honeypotd
           resources:
             limits:
+              cpu: 100m
               memory: 12Mi
             requests:
               cpu: 100m
               memory: 12Mi
           securityContext:
             capabilities:
+              drop:
+                - all
               add:
-                - NET_ADMIN
+                - NET_BIND_SERVICE
             readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
           ports:
             - containerPort: 22
               hostPort: 22
@@ -100,7 +106,7 @@ spec:
 kubectl apply -f ssh-honeypotd.yaml
 ```
 
-ssh-honeypotd's behavior in the container can be controlled with the following environment variables:
+You can control ssh-honeypotd's behavior in the container (wildwildangel/ssh-honeypotd image) with the following environment variables:
   * `ADDRESS` (default: 0.0.0.0): the IP address to bind to;
   * `PORT` (default: 22): the port to bind to.
 
