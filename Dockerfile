@@ -19,7 +19,7 @@ RUN \
     make all keys && \
     strip ssh-honeypotd
 
-FROM alpine:3.14.0 AS release-dynamic
+FROM alpine:3.14.2 AS release-dynamic
 RUN apk add --no-cache libssh
 COPY --from=build-dynamic /src/ssh-honeypotd/ssh-honeypotd /usr/bin/ssh-honeypotd
 COPY --from=build-dynamic /src/ssh-honeypotd/keys/ /etc/ssh-honeypotd/
