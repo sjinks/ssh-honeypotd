@@ -116,7 +116,7 @@ These variables make it easy to have several ssh-honeypotd's running on the same
 
 ssh-honeypotd's Docker image comes in two flavors:
 
-  1. A standard image based on Alpine 3.13 (or latest stable Alpine): [wildwildangel/ssh-honeypotd](https://hub.docker.com/repository/docker/wildwildangel/ssh-honeypotd).
+  1. A standard image based on the latest stable Alpine: [wildwildangel/ssh-honeypotd](https://hub.docker.com/repository/docker/wildwildangel/ssh-honeypotd).
   2. A minimalistic image based on the `scratch` Docker image: [wildwildangel/ssh-honeypotd-min](https://hub.docker.com/repository/docker/wildwildangel/ssh-honeypotd-min)
 
 The `ssh-honeypotd-min` image contains only the statically linked `ssh-honeypotd` binary and the set of the pre-generated SSH keys. This image is a bit smaller than `ssh-honeypotd` but is experimental at the moment. The `ssh-honeypotd` binary in the `ssh-honeypotd-min` image does not support the following command-line options: `--pid`, `--name`, `--user`, `--group`, `--no-syslog`, `--foreground`.
