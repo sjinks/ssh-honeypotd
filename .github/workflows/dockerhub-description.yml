@@ -11,6 +11,8 @@ on:
 
 jobs:
   update-description:
+    permissions:
+      contents: read
     name: Update DockerHub description
     runs-on: ubuntu-latest
 
