@@ -19,7 +19,7 @@ jobs:
           - "-DMINIMALISTIC_BUILD -DLIBSSH_STATIC=1"
     steps:
       - name: Check out source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
       - name: Install dependencies
         run: sudo apt-get -qq update && sudo apt-get install -y libssh-dev

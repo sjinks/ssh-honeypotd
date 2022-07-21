@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM --platform=amd64 wildwildangel/linux-musl-cross-compilers AS build-base
+FROM --platform=amd64 wildwildangel/linux-musl-cross-compilers@sha256:47867c3664f53b99132899671323b4eeffab46a8c3fc1445dead0af6b20c643c AS build-base
 RUN apk add --no-cache openssh-keygen
 COPY toolchain /toolchain
 
@@ -19,7 +19,7 @@ RUN \
     make all keys && \
     strip ssh-honeypotd
 
-FROM alpine:3.16.0 AS release-dynamic
+FROM alpine:3.16.0@sha256:686d8c9dfa6f3ccfc8230bc3178d23f84eeaf7e457f36f271ab1acc53015037c AS release-dynamic
 RUN apk add --no-cache libssh
 COPY --from=build-dynamic /src/ssh-honeypotd/ssh-honeypotd /usr/bin/ssh-honeypotd
 COPY --from=build-dynamic /src/ssh-honeypotd/keys/ /etc/ssh-honeypotd/
