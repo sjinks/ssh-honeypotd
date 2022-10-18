@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
 
       - name: Docker Hub Description
-        uses: peter-evans/dockerhub-description@da890086d39c735e41d8823c8a95bde4302c3d64 # tag=v3
+        uses: peter-evans/dockerhub-description@14881160433a81f9ebc838a253d4edd9e8fc35f1 # tag=v3
         with:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_PASSWORD }}
