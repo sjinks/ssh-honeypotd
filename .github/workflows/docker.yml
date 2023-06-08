@@ -65,7 +65,7 @@ jobs:
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 
       - name: Login to DockerHub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # tag=v2
+        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2
         with:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_PASSWORD }}
