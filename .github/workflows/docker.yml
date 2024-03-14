@@ -72,7 +72,7 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@0d103c3126aa41d772a8362f6aa67afac040f80c # v3.1.0
+        uses: docker/setup-buildx-action@2b51285047da1547ffb1b2203d8be4c0af6b1f20 # v3.2.0
 
       - name: Cache Docker layers
         uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
