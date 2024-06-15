@@ -14,7 +14,7 @@ ssh-honeypotd: $(OBJS)
 	$(CC) $^ $(LIBFLAGS) $(LDFLAGS) -o $@
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -fvisibility=hidden -Wall -Werror -Wno-error=attributes -Wno-unknown-pragmas -Wno-error=deprecated-declarations $(CFLAGS) -c "$<" -MMD -MP -MF"$(@:%.o=%.dep)" -MT"$(@:%.o=%.dep)" -o "$@"
+	$(CC) $(CPPFLAGS) -fvisibility=hidden -Wall -Werror -Wno-error=attributes -Wno-unknown-pragmas $(CFLAGS) -c "$<" -MMD -MP -MF"$(@:%.o=%.dep)" -MT"$(@:%.o=%.dep)" -o "$@"
 
 clean: objclean depclean
 	-rm -f $(TARGET)

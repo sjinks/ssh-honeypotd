@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <libssh/libssh.h>
+#include <libssh/callbacks.h>
 #include <libssh/server.h>
 #include "worker.h"
 #include "globals.h"
@@ -31,80 +33,80 @@ static void get_ip_port(const struct sockaddr_storage* addr, char* ipstr, int* p
 	}
 }
 
+static int auth_password(ssh_session session, const char* user, const char* pass, void* userdata)
+{
+	struct connection_info_t* conn = (struct connection_info_t*)userdata;
+
+	my_log(
+		LOG_WARNING,
+		"Failed password for %s from %s port %d ssh%d (target: %s:%d, password: %s)",
+		user,
+		conn->ipstr,
+		conn->port,
+		ssh_get_version(conn->session),
+		conn->my_ipstr,
+		conn->my_port,
+		pass
+	);
+
+	return SSH_AUTH_DENIED;
+}
+
+static void handle_session(struct connection_info_t* conn)
+{
+	conn->event = ssh_event_new();
+	if (!conn->event) {
+		my_log(LOG_ALERT, "Could not create polling context");
+		return;
+	}
+
+	struct ssh_server_callbacks_struct server_cb;
+	memset(&server_cb, 0, sizeof(server_cb));
+	ssh_callbacks_init(&server_cb);
+	server_cb.userdata               = conn;
+	server_cb.auth_password_function = auth_password;
+
+	ssh_set_auth_methods(conn->session, SSH_AUTH_METHOD_PASSWORD);
+	ssh_set_server_callbacks(conn->session, &server_cb);
+
+	if (SSH_OK != ssh_handle_key_exchange(conn->session)) {
+		my_log(
+			LOG_WARNING,
+			"Did not receive identification string from %s:%d (target: %s:%d): %s",
+			conn->ipstr,
+			conn->port,
+			conn->my_ipstr,
+			conn->my_port,
+			ssh_get_error(conn->session)
+		);
+
+		return;
+	}
+
+	ssh_event_add_session(conn->event, conn->session);
+	while (!globals.terminate && ssh_event_dopoll(conn->event, 100) != SSH_ERROR) {
+		;
+	}
+}
+
 void* worker(void* arg)
 {
 	struct sockaddr_storage addr;
-	char ipstr[INET6_ADDRSTRLEN];
-	char my_ipstr[INET6_ADDRSTRLEN];
-	int port, my_port;
-
 	struct connection_info_t* conn = (struct connection_info_t*)arg;
 
-	ssh_session session = conn->session;
-	socket_t sock       = ssh_get_fd(session);
-	int version         = ssh_get_version(session);
-	socklen_t len       = sizeof(addr);
+	socket_t sock = ssh_get_fd(conn->session);
+	socklen_t len = sizeof(addr);
 
 	if (!getpeername(sock, (struct sockaddr*)&addr, &len)) {
-		get_ip_port(&addr, ipstr, &port);
-	}
-	else {
-		ipstr[0] = '?';
-		ipstr[1] = 0;
-		port     = -1;
+		get_ip_port(&addr, conn->ipstr, &conn->port);
 	}
 
 	if (!getsockname(sock, (struct sockaddr*)&addr, &len)) {
-		get_ip_port(&addr, my_ipstr, &my_port);
-	}
-	else {
-		my_ipstr[0] = '?';
-		my_ipstr[1] = 0;
-		my_port     = -1;
+		get_ip_port(&addr, conn->my_ipstr, &conn->my_port);
 	}
 
-	if (SSH_OK == ssh_handle_key_exchange(session)) {
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
-		ssh_set_auth_methods(session, SSH_AUTH_METHOD_PASSWORD);
-#endif
-
-		do {
-			ssh_message message = ssh_message_get(session);
-			if (!message || globals.terminate) {
-				break;
-			}
-
-			int message_type = ssh_message_type(message);
-			if (message_type == SSH_REQUEST_AUTH) {
-				int message_subtype = ssh_message_subtype(message);
-				if (message_subtype == SSH_AUTH_METHOD_PASSWORD) {
-					my_log(
-						LOG_WARNING,
-						"Failed password for %s from %s port %d ssh%d (target: %s:%d, password: %s)",
-						ssh_message_auth_user(message), ipstr, port, version,
-						my_ipstr, my_port, ssh_message_auth_password(message)
-					);
-				}
-
-				ssh_message_auth_set_methods(message, SSH_AUTH_METHOD_PASSWORD);
-				ssh_message_reply_default(message);
-			}
-			else {
-				ssh_message_reply_default(message);
-			}
-
-			ssh_message_free(message);
-		} while (!globals.terminate);
-	}
-	else {
-		my_log(LOG_WARNING, "Did not receive identification string from %s:%d (target: %s:%d)", ipstr, port, my_ipstr, my_port);
-	}
-
+	handle_session(conn);
 	finalize_connection(conn);
-	if (!globals.terminate) {
-		pthread_detach(pthread_self());
-	}
-
 	return 0;
 }
 
@@ -133,6 +135,10 @@ void finalize_connection(struct connection_info_t* conn)
 		--globals.n_threads;
 	}
 	pthread_mutex_unlock(&globals.mutex);
+
+	if (conn->event) {
+		ssh_event_free(conn->event);
+	}
 
 	ssh_disconnect(session);
 	ssh_free(session);
