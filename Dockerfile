@@ -9,7 +9,7 @@ RUN \
     $(setvars ${TARGETPLATFORM}) && \
     apk add --root "${APK_ROOT}" --arch "${APK_ARCH}" --no-cache libssh-dev zlib-dev openssl-dev openssl-libs-static zlib-static
 
-FROM build-deps as build-dynamic
+FROM build-deps AS build-dynamic
 ARG TARGETPLATFORM
 WORKDIR /src/ssh-honeypotd
 ENV CFLAGS="-Os -g0"
@@ -31,8 +31,8 @@ CMD ["-k", "/etc/ssh-honeypotd/ssh_host_dsa_key", "-k", "/etc/ssh-honeypotd/ssh_
 FROM build-deps AS build-static
 ARG TARGETPLATFORM
 WORKDIR /usr/src
-RUN wget https://www.libssh.org/files/0.10/libssh-0.10.4.tar.xz -O libssh-0.10.4.tar.xz
-RUN tar -xa --strip-components=1 -f libssh-0.10.4.tar.xz
+RUN wget https://www.libssh.org/files/0.10/libssh-0.10.6.tar.xz -O libssh-0.10.6.tar.xz
+RUN tar -xa --strip-components=1 -f libssh-0.10.6.tar.xz
 RUN \
     $(setvars ${TARGETPLATFORM}) && \
     cmake \
