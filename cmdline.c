@@ -164,6 +164,53 @@ static void set_defaults(struct globals_t* g)
 #endif
 }
 
+static void handle_server_key(const char* keyfile, struct globals_t* g)
+{
+	ssh_key key;
+	int rc = ssh_pki_import_privkey_file(keyfile, NULL, NULL, NULL, &key);
+	if (-1 == rc) {
+		fprintf(stderr, "WARNING: failed to import the key from %s\n", keyfile);
+		return;
+	}
+
+	enum ssh_keytypes_e key_type = ssh_key_type(key);
+	ssh_key_free(key);
+	char** loc   = NULL;
+	switch ((int)key_type) {
+		case SSH_KEYTYPE_DSS:
+			loc = &g->dsa_key;
+			break;
+
+		case SSH_KEYTYPE_RSA:
+			loc = &g->rsa_key;
+			break;
+
+		case SSH_KEYTYPE_ECDSA:
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 9, 0)
+		case SSH_KEYTYPE_ECDSA_P256:
+		case SSH_KEYTYPE_ECDSA_P384:
+		case SSH_KEYTYPE_ECDSA_P521:
+#endif
+			loc = &g->ecdsa_key;
+			break;
+
+		case SSH_KEYTYPE_ED25519:
+			loc = &g->ed25519_key;
+			break;
+
+		default:
+			fprintf(stderr, "WARNING: unsupported key type in %s (%d)\n", keyfile, (int)key_type);
+			loc = NULL;
+			break;
+	}
+
+	if (loc) {
+		free(*loc);
+		*loc = my_strdup(keyfile);
+	}
+
+}
+
 void parse_options(int argc, char** argv, struct globals_t* g)
 {
 	assert(g != NULL);
@@ -190,52 +237,9 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 			case 'r':
 			case 'd':
 			case 'e':
-			case 'k': {
-				ssh_key key;
-				int rc = ssh_pki_import_privkey_file(optarg, NULL, NULL, NULL, &key);
-				if (-1 == rc) {
-					fprintf(stderr, "WARNING: failed to import the key from %s\n", optarg);
-					break;
-				}
-
-				enum ssh_keytypes_e key_type = ssh_key_type(key);
-				ssh_key_free(key);
-				char** loc   = NULL;
-				switch ((int)key_type) {
-					case SSH_KEYTYPE_DSS:
-						loc = &g->dsa_key;
-						break;
-
-					case SSH_KEYTYPE_RSA:
-						loc = &g->rsa_key;
-						break;
-
-					case SSH_KEYTYPE_ECDSA:
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 9, 0)
-					case SSH_KEYTYPE_ECDSA_P256:
-					case SSH_KEYTYPE_ECDSA_P384:
-					case SSH_KEYTYPE_ECDSA_P521:
-#endif
-						loc = &g->ecdsa_key;
-						break;
-
-					case SSH_KEYTYPE_ED25519:
-						loc = &g->ed25519_key;
-						break;
-
-					default:
-						fprintf(stderr, "WARNING: unsupported key type in %s (%d)\n", optarg, (int)key_type);
-						loc = NULL;
-						break;
-				}
-
-				if (loc) {
-					free(*loc);
-					*loc = my_strdup(optarg);
-				}
-
+			case 'k':
+				handle_server_key(optarg, g);
 				break;
-			}
 
 			case 'b':
 				free(g->bind_address);
