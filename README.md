@@ -3,7 +3,7 @@
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/3318/badge.svg)](https://scan.coverity.com/projects/3318)
 ![Build](https://github.com/sjinks/ssh-honeypotd/workflows/Build/badge.svg)
 
-A low-interaction SSH honeypot written in C
+A low-interaction SSH honeypot written in C.
 
 ## Command Line Options
 
@@ -24,9 +24,7 @@ Mandatory arguments to long options are mandatory for short options too.
 
 `-k` option must be specified at least once if ssh-honeypots is compiled against libssh prior to 0.8.0 (note that in Ubuntu (and possibly Debian), libssh 0.8.0 is detected as 0.7.0 because of a bug in `libssh.h`). For newer libssh versions, the host key is generated automatically (RSA 2048 bits).
 
-Please note:
-  * ECDSA keys are supported if ssh-honeypotd is compiled against and run with libssh 0.6.4+
-  * ED25519 keys are supported if ssh-honeypotd is compiled against and run with libssh 0.7.0+
+The minimum supported `libssh` version is 0.7.0.
 
 ## Usage with Docker
 

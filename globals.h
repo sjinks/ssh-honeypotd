@@ -11,7 +11,12 @@ struct connection_info_t {
 	struct connection_info_t* prev;
 	struct connection_info_t* next;
 	ssh_session session;
+	ssh_event event;
 	pthread_t thread;
+	int port;
+	int my_port;
+	char ipstr[INET6_ADDRSTRLEN];
+	char my_ipstr[INET6_ADDRSTRLEN];
 };
 
 #pragma clang diagnostic push

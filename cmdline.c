@@ -14,9 +14,7 @@
 static struct option long_options[] = {
 	{ "rsa-key",    required_argument, 0, 'r' },
 	{ "dsa-key",    required_argument, 0, 'd' },
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 	{ "ecdsa-key",  required_argument, 0, 'e' },
-#endif
 	{ "host-key",   required_argument, 0, 'k' },
 	{ "address",    required_argument, 0, 'b' },
 	{ "port",       required_argument, 0, 'p' },
@@ -212,7 +210,6 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 						loc = &g->rsa_key;
 						break;
 
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 6, 4)
 					case SSH_KEYTYPE_ECDSA:
 #if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 9, 0)
 					case SSH_KEYTYPE_ECDSA_P256:
@@ -221,13 +218,10 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 #endif
 						loc = &g->ecdsa_key;
 						break;
-#endif
 
-#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 7, 0)
 					case SSH_KEYTYPE_ED25519:
 						loc = &g->ed25519_key;
 						break;
-#endif
 
 					default:
 						fprintf(stderr, "WARNING: unsupported key type in %s (%d)\n", optarg, (int)key_type);

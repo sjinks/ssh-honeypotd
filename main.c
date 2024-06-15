@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <libssh/server.h>
+#include <unistd.h>
 #include "globals.h"
 #include "log.h"
 #include "daemon.h"
@@ -68,21 +69,6 @@ static void set_options(struct globals_t* g)
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BINDADDR, g->bind_address);
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BINDPORT_STR, g->bind_port);
 
-#if LIBSSH_VERSION_INT < SSH_VERSION_INT(0, 7, 0)
-	if (g->dsa_key) {
-		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_DSAKEY, g->dsa_key);
-	}
-
-	if (g->rsa_key) {
-		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_RSAKEY, g->rsa_key);
-	}
-
-#if defined(SSH_BIND_OPTIONS_ECDSAKEY)
-	if (g->ecdsa_key) {
-		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_ECDSAKEY, g->ecdsa_key);
-	}
-#endif
-#else
 	if (g->dsa_key) {
 		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->dsa_key);
 	}
@@ -98,7 +84,6 @@ static void set_options(struct globals_t* g)
 	if (g->ed25519_key) {
 		ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_HOSTKEY, g->ed25519_key);
 	}
-#endif
 
 	ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_BANNER, "OpenSSH");
 
@@ -120,7 +105,7 @@ static void set_options(struct globals_t* g)
 static void spawn_thread(struct globals_t* g, pthread_attr_t* attr, ssh_session session)
 {
 	size_t num_threads;
-	struct connection_info_t* conn = malloc(sizeof(struct connection_info_t));
+	struct connection_info_t* conn = calloc(1, sizeof(struct connection_info_t));
 	if (!conn) {
 		my_log(LOG_ALERT, "malloc() failed, out of memory");
 		ssh_disconnect(session);
@@ -128,13 +113,27 @@ static void spawn_thread(struct globals_t* g, pthread_attr_t* attr, ssh_session 
 		return;
 	}
 
-	conn->next    = NULL;
-	conn->session = session;
+	conn->next        = NULL;
+	conn->event       = NULL;
+	conn->session     = session;
+
+	conn->port        = -1;
+	conn->ipstr[0]    = '?';
+	conn->ipstr[1]    = 0;
+
+	conn->my_port     = -1;
+	conn->my_ipstr[0] = '?';
+	conn->my_ipstr[1] = 0;
 
 	pthread_mutex_lock(&g->mutex);
 	{
-		if (!g->head) g->head       = conn;
-		if (g->tail)  g->tail->next = conn;
+		if (!g->head) {
+			g->head = conn;
+		}
+
+		if (g->tail) {
+			g->tail->next = conn;
+		}
 
 		conn->prev  = g->tail;
 		g->tail     = conn;
@@ -158,10 +157,16 @@ static void main_loop(struct globals_t* g)
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setstacksize(&attr, 65536);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
 	while (!g->terminate) {
 		const long int timeout = SESSION_TIMEOUT;
 		ssh_session session    = ssh_new();
+		if (!session) {
+			my_log(LOG_ALERT, "Failed to allocate an SSH session");
+			break;
+		}
+
 		ssh_options_set(session, SSH_OPTIONS_TIMEOUT, &timeout);
 		int r = ssh_bind_accept(g->sshbind, session);
 		if (r == SSH_ERROR) {
@@ -170,7 +175,7 @@ static void main_loop(struct globals_t* g)
 				break;
 			}
 
-			my_log(LOG_WARNING, "Error accepting a connection: %s\n", ssh_get_error(g->sshbind));
+			my_log(LOG_WARNING, "Error accepting the connection: %s\n", ssh_get_error(g->sshbind));
 			continue;
 		}
 
