@@ -74,29 +74,23 @@ void* worker(void* arg)
 				break;
 			}
 
-			switch (ssh_message_type(message)) {
-				case SSH_REQUEST_AUTH:
-					switch (ssh_message_subtype(message)) {
-						case SSH_AUTH_METHOD_PASSWORD:
-							my_log(
-								LOG_WARNING,
-								"Failed password for %s from %s port %d ssh%d (target: %s:%d, password: %s)",
-								ssh_message_auth_user(message), ipstr, port, version,
-								my_ipstr, my_port, ssh_message_auth_password(message)
-							);
-							/* fall through */
+			int message_type = ssh_message_type(message);
+			if (message_type == SSH_REQUEST_AUTH) {
+				int message_subtype = ssh_message_subtype(message);
+				if (message_subtype == SSH_AUTH_METHOD_PASSWORD) {
+					my_log(
+						LOG_WARNING,
+						"Failed password for %s from %s port %d ssh%d (target: %s:%d, password: %s)",
+						ssh_message_auth_user(message), ipstr, port, version,
+						my_ipstr, my_port, ssh_message_auth_password(message)
+					);
+				}
 
-						default:
-							ssh_message_auth_set_methods(message, SSH_AUTH_METHOD_PASSWORD);
-							ssh_message_reply_default(message);
-							break;
-					}
-
-					break;
-
-				default:
-					ssh_message_reply_default(message);
-					break;
+				ssh_message_auth_set_methods(message, SSH_AUTH_METHOD_PASSWORD);
+				ssh_message_reply_default(message);
+			}
+			else {
+				ssh_message_reply_default(message);
 			}
 
 			ssh_message_free(message);
