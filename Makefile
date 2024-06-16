@@ -1,8 +1,9 @@
-TARGET   = ssh-honeypotd
-C_SRC    = main.c globals.c cmdline.c pidfile.c daemon.c worker.c log.c
-C_DEPS   = $(patsubst %.c,%.dep,$(C_SRC))
-OBJS     = $(patsubst %.c,%.o,$(C_SRC))
-LIBFLAGS = $(shell pkg-config --libs libssh) $(shell pkg-config --libs --silence-errors libssh_threads) -pthread
+TARGET    = ssh-honeypotd
+C_SRC     = main.c globals.c cmdline.c pidfile.c daemon.c worker.c log.c
+C_DEPS    = $(patsubst %.c,%.dep,$(C_SRC))
+OBJS      = $(patsubst %.c,%.o,$(C_SRC))
+PKGCONFIG = pkg-config
+LIBFLAGS  = $(shell $(PKGCONFIG) --libs libssh) $(shell pkg-config --libs --silence-errors libssh_threads) -pthread
 
 all: $(TARGET)
 
