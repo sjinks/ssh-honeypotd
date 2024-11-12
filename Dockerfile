@@ -1,6 +1,6 @@
 FROM --platform=${BUILDPLATFORM} tonistiigi/xx:latest@sha256:0c6a569797744e45955f39d4f7538ac344bfb7ebf0a54006a0a4297b153ccf0f AS xx
 
-FROM --platform=${BUILDPLATFORM} alpine:3.20.3@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d AS build-base
+FROM --platform=${BUILDPLATFORM} alpine:3.20.3@sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a AS build-base
 ARG TARGETPLATFORM
 COPY --from=xx / /
 RUN \
@@ -17,7 +17,7 @@ RUN \
     $(xx-info triple)-strip ssh-honeypotd && \
     setcap cap_net_bind_service=ep ssh-honeypotd
 
-FROM --platform=${BUILDPLATFORM} alpine:3.20.3@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d AS release-dynamic-base
+FROM --platform=${BUILDPLATFORM} alpine:3.20.3@sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a AS release-dynamic-base
 ARG TARGETPLATFORM
 COPY --from=xx / /
 RUN xx-apk add --no-cache libssh
@@ -30,7 +30,7 @@ RUN \
         ln -sf /usr /target/usr; \
     fi
 
-FROM alpine:3.20.3@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d AS release-dynamic
+FROM alpine:3.20.3@sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a AS release-dynamic
 COPY --from=release-dynamic-base /target/lib /lib
 COPY --from=release-dynamic-base /target/usr/lib /usr/lib
 COPY --from=build-dynamic /src/ssh-honeypotd/ssh-honeypotd /usr/bin/ssh-honeypotd
