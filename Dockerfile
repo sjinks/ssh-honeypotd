@@ -38,7 +38,7 @@ COPY --from=build-dynamic /src/ssh-honeypotd/keys/ /etc/ssh-honeypotd/
 COPY entrypoint.sh /entrypoint.sh
 EXPOSE 22
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["-k", "/etc/ssh-honeypotd/ssh_host_dsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_rsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ecdsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ed25519_key", "-f", "-x"]
+CMD ["-k", "/etc/ssh-honeypotd/ssh_host_rsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ecdsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ed25519_key", "-f", "-x"]
 
 
 FROM --platform=${BUILDPLATFORM} build-base AS build-static
@@ -87,4 +87,4 @@ COPY --from=build-static /src/ssh-honeypotd/ssh-honeypotd /ssh-honeypotd
 COPY --from=build-static /src/ssh-honeypotd/keys/ /
 EXPOSE 22
 ENTRYPOINT [ "/ssh-honeypotd" ]
-CMD [ "-k", "/ssh_host_dsa_key", "-k", "/ssh_host_rsa_key", "-k", "/ssh_host_ecdsa_key", "-k", "/ssh_host_ed25519_key" ]
+CMD [ "-k", "/ssh_host_rsa_key", "-k", "/ssh_host_ecdsa_key", "-k", "/ssh_host_ed25519_key" ]
