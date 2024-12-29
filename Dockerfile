@@ -1,6 +1,6 @@
 FROM --platform=${BUILDPLATFORM} tonistiigi/xx:latest@sha256:923441d7c25f1e2eb5789f82d987693c47b8ed987c4ab3b075d6ed2b5d6779a3 AS xx
 
-FROM --platform=${BUILDPLATFORM} alpine:3.20.3@sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a AS build-base
+FROM --platform=${BUILDPLATFORM} alpine:3.21.0@sha256:21dc6063fd678b478f57c0e13f47560d0ea4eeba26dfc947b2a4f81f686b9f45 AS build-base
 ARG TARGETPLATFORM
 COPY --from=xx / /
 RUN \
@@ -17,7 +17,7 @@ RUN \
     $(xx-info triple)-strip ssh-honeypotd && \
     setcap cap_net_bind_service=ep ssh-honeypotd
 
-FROM --platform=${BUILDPLATFORM} alpine:3.20.3@sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a AS release-dynamic-base
+FROM --platform=${BUILDPLATFORM} alpine:3.21.0@sha256:21dc6063fd678b478f57c0e13f47560d0ea4eeba26dfc947b2a4f81f686b9f45 AS release-dynamic-base
 ARG TARGETPLATFORM
 COPY --from=xx / /
 RUN xx-apk add --no-cache libssh
@@ -30,7 +30,7 @@ RUN \
         ln -sf /usr /target/usr; \
     fi
 
-FROM alpine:3.20.3@sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a AS release-dynamic
+FROM alpine:3.21.0@sha256:21dc6063fd678b478f57c0e13f47560d0ea4eeba26dfc947b2a4f81f686b9f45 AS release-dynamic
 COPY --from=release-dynamic-base /target/lib /lib
 COPY --from=release-dynamic-base /target/usr/lib /usr/lib
 COPY --from=build-dynamic /src/ssh-honeypotd/ssh-honeypotd /usr/bin/ssh-honeypotd
@@ -38,7 +38,7 @@ COPY --from=build-dynamic /src/ssh-honeypotd/keys/ /etc/ssh-honeypotd/
 COPY entrypoint.sh /entrypoint.sh
 EXPOSE 22
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["-k", "/etc/ssh-honeypotd/ssh_host_dsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_rsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ecdsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ed25519_key", "-f", "-x"]
+CMD ["-k", "/etc/ssh-honeypotd/ssh_host_rsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ecdsa_key", "-k", "/etc/ssh-honeypotd/ssh_host_ed25519_key", "-f", "-x"]
 
 
 FROM --platform=${BUILDPLATFORM} build-base AS build-static
@@ -87,4 +87,4 @@ COPY --from=build-static /src/ssh-honeypotd/ssh-honeypotd /ssh-honeypotd
 COPY --from=build-static /src/ssh-honeypotd/keys/ /
 EXPOSE 22
 ENTRYPOINT [ "/ssh-honeypotd" ]
-CMD [ "-k", "/ssh_host_dsa_key", "-k", "/ssh_host_rsa_key", "-k", "/ssh_host_ecdsa_key", "-k", "/ssh_host_ed25519_key" ]
+CMD [ "-k", "/ssh_host_rsa_key", "-k", "/ssh_host_ecdsa_key", "-k", "/ssh_host_ed25519_key" ]
