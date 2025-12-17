@@ -51,8 +51,8 @@ RUN \
     xx-clang --setup-target-triple
 
 WORKDIR /usr/src
-RUN wget https://www.libssh.org/files/0.10/libssh-0.10.6.tar.xz -O libssh-0.10.6.tar.xz
-RUN tar -xa --strip-components=1 -f libssh-0.10.6.tar.xz
+RUN wget https://www.libssh.org/files/0.11/libssh-0.11.3.tar.xz -O libssh-0.11.3.tar.xz
+RUN tar -xa --strip-components=1 -f libssh-0.11.3.tar.xz
 RUN \
     if xx-info is-cross; then EXTRA="-DCMAKE_SYSROOT=/$(xx-info triple) -DCMAKE_INSTALL_PREFIX=/$(xx-info triple)/usr"; else EXTRA=; fi && \
     cmake -B build \
