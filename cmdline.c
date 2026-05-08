@@ -8,6 +8,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <limits.h>
+#include <stdint.h>
 #include "globals.h"
 #include "cmdline.h"
 
@@ -129,6 +130,11 @@ static void resolve_pid_file(struct globals_t* g)
 			if (cwd && cwd[0] == '/') {
 				size_t cwd_len = strlen(cwd);
 				size_t pid_len = strlen(g->pid_file);
+				if (pid_len > SIZE_MAX - cwd_len - 2) {
+					fprintf(stderr, "ERROR: path too long\n");
+					free(g->pid_file);
+					exit(EXIT_FAILURE);
+				}
 				newbuf         = calloc(cwd_len + pid_len + 2, 1);
 				check_alloc(newbuf, "calloc");
 				memcpy(newbuf, cwd, cwd_len);
