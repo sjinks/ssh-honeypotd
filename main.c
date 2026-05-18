@@ -44,7 +44,10 @@ static void check_pid_file(struct globals_t* g)
 
 		uid_t pid_owner = geteuid();
 		if (pid_owner == 0 && g->uid_set) {
-			/* The dropped daemon must own the PID file it will update/remove. */
+			/*
+			 * Prefer the runtime uid as PID-file owner for post-drop updates;
+			 * PID-file removal still depends on parent directory permissions.
+			 */
 			pid_owner = g->uid;
 		}
 
