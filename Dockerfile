@@ -63,8 +63,8 @@ RUN \
     gpg --batch --show-keys --with-colons libssh-release-key.asc | grep -q "^fpr:::::::::${LIBSSH_RELEASE_KEY}:"; \
     gpg --batch --import libssh-release-key.asc; \
     gpg --batch --verify "libssh-${LIBSSH_VERSION}.tar.xz.asc" "libssh-${LIBSSH_VERSION}.tar.xz"; \
+    tar -xa --strip-components=1 -f "libssh-${LIBSSH_VERSION}.tar.xz"; \
     rm -rf "$GNUPGHOME" libssh-release-key.asc "libssh-${LIBSSH_VERSION}.tar.xz.asc"
-RUN tar -xa --strip-components=1 -f "libssh-${LIBSSH_VERSION}.tar.xz"
 RUN \
     if xx-info is-cross; then EXTRA="-DCMAKE_SYSROOT=/$(xx-info triple) -DCMAKE_INSTALL_PREFIX=/$(xx-info triple)/usr"; else EXTRA=; fi && \
     cmake -B build \
