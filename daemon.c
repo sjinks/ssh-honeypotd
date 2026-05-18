@@ -48,27 +48,42 @@ static int find_account(uid_t* uid, gid_t* gid)
 }
 #endif
 
+int prepare_privs(struct globals_t* g)
+{
+#ifndef MINIMALISTIC_BUILD
+	if (0 == geteuid() && (!g->uid_set || !g->gid_set)) {
+		/* Fill defaults early so pre-drop setup can use the final runtime uid/gid. */
+		uid_t uid;
+		gid_t gid;
+
+		if (-1 == find_account(&uid, &gid)) {
+			return DP_NO_UNPRIV_ACCOUNT;
+		}
+
+		if (!g->uid_set) {
+			g->uid_set = 1;
+			g->uid     = uid;
+		}
+
+		if (!g->gid_set) {
+			g->gid_set = 1;
+			g->gid     = gid;
+		}
+	}
+#else
+	(void)g;
+#endif
+
+	return 0;
+}
+
 int drop_privs(struct globals_t* g)
 {
 #ifndef MINIMALISTIC_BUILD
 	if (0 == geteuid()) {
-		if (!g->uid_set || !g->gid_set) {
-			uid_t uid;
-			gid_t gid;
-
-			if (-1 == find_account(&uid, &gid)) {
-				return DP_NO_UNPRIV_ACCOUNT;
-			}
-
-			if (!g->uid_set) {
-				g->uid_set = 1;
-				g->uid     = uid;
-			}
-
-			if (!g->gid_set) {
-				g->gid_set = 1;
-				g->gid     = gid;
-			}
+		int prepared = prepare_privs(g);
+		if (prepared != 0) {
+			return prepared;
 		}
 
 		if (

@@ -8,6 +8,7 @@
 #define DP_GENERAL_FAILURE           2
 
 void set_signals(void);
+int prepare_privs(struct globals_t* globals);
 int drop_privs(struct globals_t* globals);
 
 #endif /* DAEMON_H_ */

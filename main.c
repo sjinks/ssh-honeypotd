@@ -18,10 +18,37 @@
 struct globals_t globals;
 
 #ifndef MINIMALISTIC_BUILD
+static void report_privs_error(int res)
+{
+	switch (res) {
+		case DP_NO_UNPRIV_ACCOUNT:
+			fprintf(stderr, "ERROR: Failed to find an unprivileged account\n");
+			break;
+
+		case DP_GENERAL_FAILURE:
+		default:
+			fprintf(stderr, "ERROR: Failed to drop privileges\n");
+			break;
+	}
+}
+
 static void check_pid_file(struct globals_t* g)
 {
 	if (g->pid_file) {
-		g->pid_fd = create_pid_file(g->pid_file);
+		/* Resolve the eventual runtime uid before creating a root-owned PID file. */
+		int res = prepare_privs(g);
+		if (res != 0) {
+			report_privs_error(res);
+			exit(EXIT_FAILURE);
+		}
+
+		uid_t pid_owner = geteuid();
+		if (pid_owner == 0 && g->uid_set) {
+			/* The dropped daemon must own the PID file it will update/remove. */
+			pid_owner = g->uid;
+		}
+
+		g->pid_fd = create_pid_file(g->pid_file, pid_owner);
 		if (g->pid_fd == -1) {
 			fprintf(stderr, "Error creating PID file %s: %s\n", g->pid_file, strerror(errno));
 			exit(EXIT_FAILURE);
@@ -41,17 +68,7 @@ static void daemonize(struct globals_t* g)
 	set_signals();
 	res = drop_privs(g);
 	if (res != 0) {
-		switch (res) {
-			case DP_NO_UNPRIV_ACCOUNT:
-				fprintf(stderr, "ERROR: Failed to find an unprivileged account\n");
-				break;
-
-			case DP_GENERAL_FAILURE:
-			default:
-				fprintf(stderr, "ERROR: Failed to drop privileges\n");
-				break;
-		}
-
+		report_privs_error(res);
 		exit(EXIT_FAILURE);
 	}
 
