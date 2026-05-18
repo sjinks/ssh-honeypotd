@@ -8,8 +8,8 @@
 #include <pwd.h>
 #include <grp.h>
 #include <limits.h>
-#include "globals.h"
 #include "cmdline.h"
+#include "globals.h"
 
 static struct option long_options[] = {
 	{ "rsa-key",    required_argument, 0, 'r' },
@@ -208,7 +208,6 @@ static void handle_server_key(const char* keyfile, struct globals_t* g)
 		free(*loc);
 		*loc = my_strdup(keyfile);
 	}
-
 }
 
 void parse_options(int argc, char** argv, struct globals_t* g)
@@ -243,23 +242,23 @@ void parse_options(int argc, char** argv, struct globals_t* g)
 
 			case 'b':
 				free(g->bind_address);
-				g->bind_address = strdup(optarg);
+				g->bind_address = my_strdup(optarg);
 				break;
 
 			case 'p':
 				free(g->bind_port);
-				g->bind_port = strdup(optarg);
+				g->bind_port = my_strdup(optarg);
 				break;
 
 #ifndef MINIMALISTIC_BUILD
 			case 'P':
 				free(g->pid_file);
-				g->pid_file = strdup(optarg);
+				g->pid_file = my_strdup(optarg);
 				break;
 
 			case 'n':
 				free(g->daemon_name);
-				g->daemon_name = strdup(optarg);
+				g->daemon_name = my_strdup(optarg);
 				break;
 
 			case 'f':
