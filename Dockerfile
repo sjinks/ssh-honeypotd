@@ -45,14 +45,26 @@ FROM --platform=${BUILDPLATFORM} build-base AS build-static
 ARG TARGETPLATFORM
 WORKDIR /src/ssh-honeypotd
 RUN \
-    apk add --no-cache cmake && \
+    apk add --no-cache cmake gnupg && \
     xx-apk add --no-cache zlib-dev openssl-dev openssl-libs-static zlib-static && \
     if [ "$(xx-info alpine-arch)" = "ppc64le" ]; then export XX_CC_PREFER_LINKER=ld; fi && \
     xx-clang --setup-target-triple
 
 WORKDIR /usr/src
-RUN wget https://www.libssh.org/files/0.12/libssh-0.12.0.tar.xz -O libssh-0.12.0.tar.xz
-RUN tar -xa --strip-components=1 -f libssh-0.12.0.tar.xz
+RUN \
+    set -eu; \
+    LIBSSH_VERSION=0.12.0; \
+    LIBSSH_RELEASE_KEY=88A228D89B07C2C77D0C780903D5DF8CFDD3E8E7; \
+    wget "https://www.libssh.org/files/0.12/libssh-${LIBSSH_VERSION}.tar.xz" -O "libssh-${LIBSSH_VERSION}.tar.xz"; \
+    wget "https://www.libssh.org/files/0.12/libssh-${LIBSSH_VERSION}.tar.xz.asc" -O "libssh-${LIBSSH_VERSION}.tar.xz.asc"; \
+    wget "https://keyserver.ubuntu.com/pks/lookup?op=get&options=mr&search=0x${LIBSSH_RELEASE_KEY}" -O libssh-release-key.asc; \
+    GNUPGHOME="$(mktemp -d)"; \
+    export GNUPGHOME; \
+    gpg --batch --show-keys --with-colons libssh-release-key.asc | grep -q "^fpr:::::::::${LIBSSH_RELEASE_KEY}:"; \
+    gpg --batch --import libssh-release-key.asc; \
+    gpg --batch --verify "libssh-${LIBSSH_VERSION}.tar.xz.asc" "libssh-${LIBSSH_VERSION}.tar.xz"; \
+    rm -rf "$GNUPGHOME" libssh-release-key.asc "libssh-${LIBSSH_VERSION}.tar.xz.asc"
+RUN tar -xa --strip-components=1 -f "libssh-${LIBSSH_VERSION}.tar.xz"
 RUN \
     if xx-info is-cross; then EXTRA="-DCMAKE_SYSROOT=/$(xx-info triple) -DCMAKE_INSTALL_PREFIX=/$(xx-info triple)/usr"; else EXTRA=; fi && \
     cmake -B build \
