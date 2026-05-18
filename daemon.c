@@ -5,11 +5,9 @@
 #include <grp.h>
 #include "daemon.h"
 #include "globals.h"
-#include "log.h"
 
 static void signal_handler(int signal)
 {
-	my_log(LOG_DAEMON | LOG_INFO, "Got signal %d, shutting down", signal);
 	globals.terminate = 1;
 }
 
