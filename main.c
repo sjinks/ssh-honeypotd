@@ -90,7 +90,14 @@ static void set_options(struct globals_t* g)
 #if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 7, 90)
 	if (!g->rsa_key && !g->dsa_key && !g->ecdsa_key && !g->ed25519_key) {
 		ssh_key key;
-		int res = ssh_pki_generate(SSH_KEYTYPE_RSA, 2048, &key);
+		int res;
+
+#if LIBSSH_VERSION_INT >= SSH_VERSION_INT(0, 12, 0)
+		res = ssh_pki_generate_key(SSH_KEYTYPE_RSA, NULL, &key);
+#else
+		res = ssh_pki_generate(SSH_KEYTYPE_RSA, 0, &key);
+#endif
+
 		if (res == SSH_OK) {
 			ssh_bind_options_set(g->sshbind, SSH_BIND_OPTIONS_IMPORT_KEY, key);
 		}
