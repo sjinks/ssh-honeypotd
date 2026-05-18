@@ -183,6 +183,7 @@ static void main_loop(struct globals_t* g)
 	}
 
 	pthread_attr_destroy(&attr);
+	my_log(LOG_DAEMON | LOG_INFO, "Shutting down...");
 }
 
 static void goodbye(void)
