@@ -51,8 +51,8 @@ RUN \
     xx-clang --setup-target-triple
 
 WORKDIR /usr/src
-RUN wget https://www.libssh.org/files/0.11/libssh-0.11.3.tar.xz -O libssh-0.11.3.tar.xz
-RUN tar -xa --strip-components=1 -f libssh-0.11.3.tar.xz
+RUN wget https://www.libssh.org/files/0.12/libssh-0.12.0.tar.xz -O libssh-0.12.0.tar.xz
+RUN tar -xa --strip-components=1 -f libssh-0.12.0.tar.xz
 RUN \
     if xx-info is-cross; then EXTRA="-DCMAKE_SYSROOT=/$(xx-info triple) -DCMAKE_INSTALL_PREFIX=/$(xx-info triple)/usr"; else EXTRA=; fi && \
     cmake -B build \
@@ -84,7 +84,8 @@ RUN \
 
 FROM scratch AS release-static
 COPY --from=build-static /src/ssh-honeypotd/ssh-honeypotd /ssh-honeypotd
-COPY --from=build-static /src/ssh-honeypotd/keys/ /
+COPY --from=build-static --chown=10000:10000 /src/ssh-honeypotd/keys/ /
 EXPOSE 22
+USER 10000:10000
 ENTRYPOINT [ "/ssh-honeypotd" ]
 CMD [ "-k", "/ssh_host_rsa_key", "-k", "/ssh_host_ecdsa_key", "-k", "/ssh_host_ed25519_key" ]
