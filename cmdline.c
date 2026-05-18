@@ -115,21 +115,31 @@ static void resolve_pid_file(struct globals_t* g)
 			char* newbuf = NULL;
 
 			/* If the current directory is not below the root directory of
-			* the current process (e.g., because the process set a new
-			* filesystem root using chroot(2) without changing its current
-			* directory into the new root), then, since Linux 2.6.36,
-			* the returned path will be prefixed with the string
-			* "(unreachable)". Such behavior can also be caused by
-			* an unprivileged user by changing the current directory into
-			* another mount namespace. When dealing with paths from
-			* untrusted sources, callers of these functions should consider
-			* checking whether the returned path starts with '/' or '('
-			* to avoid misinterpreting an unreachable path as a relative path.
-			*/
+			 * the current process (e.g., because the process set a new
+			 * filesystem root using chroot(2) without changing its current
+			 * directory into the new root), then, since Linux 2.6.36,
+			 * the returned path will be prefixed with the string
+			 * "(unreachable)". Such behavior can also be caused by
+			 * an unprivileged user by changing the current directory into
+			 * another mount namespace. When dealing with paths from
+			 * untrusted sources, callers of these functions should consider
+			 * checking whether the returned path starts with '/' or '('
+			 * to avoid misinterpreting an unreachable path as a relative path.
+			 */
 			if (cwd && cwd[0] == '/') {
 				size_t cwd_len = strlen(cwd);
 				size_t pid_len = strlen(g->pid_file);
-				newbuf         = calloc(cwd_len + pid_len + 2, 1);
+
+				/* Although static analyzers flag this, on normal Linux systems
+				 * `ARG_MAX` makes a real-world wrap to `SIZE_MAX` effectively unreachable.
+				 */
+				if (pid_len > SIZE_MAX - cwd_len - 2) {
+					fprintf(stderr, "ERROR: PID file path is too long\n");
+					free(g->pid_file);
+					exit(EXIT_FAILURE);
+				}
+
+				newbuf = calloc(cwd_len + pid_len + 2, 1);
 				check_alloc(newbuf, "calloc");
 				memcpy(newbuf, cwd, cwd_len);
 				newbuf[cwd_len] = '/';
