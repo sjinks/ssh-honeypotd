@@ -39,8 +39,7 @@ static void wait_for_threads(struct globals_t* g)
 		pthread_mutex_unlock(&g->mutex);
 
 		if (num_threads > 0) {
-			pthread_kill(thread, SIGTERM);
-			pthread_join(thread, NULL);
+			pthread_cancel(thread);
 		}
 	} while (num_threads > 0);
 }
