@@ -184,7 +184,7 @@ static void main_loop(struct globals_t* g)
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setstacksize(&attr, 65536);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	pthread_attr_setstacksize(&attr, 65536);
 
 	while (!g->terminate) {
 		const long int timeout = SESSION_TIMEOUT;
